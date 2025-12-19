@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".RegisterActivity">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="15dp"
+        android:layout_weight="1.5"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/logo_register"
+            android:layout_width="wrap_content"
+            android:layout_height="120dp"
+            android:src="@drawable/logo" />
+
+        <TextView
+            android:text="@string/buat_akun_baru"
+            android:textAlignment="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="15dp"
+        android:background="@drawable/bg_gradasi"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:text="@string/Register"
+            android:textAlignment="center"
+            android:textColor="#ffffff"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:id="@+id/et_reg_username"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/form"
+            android:drawableStart="@drawable/user"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginTop="20dp"
+            android:hint="@string/hint_username" />
+
+        <EditText
+            android:id="@+id/et_reg_password"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/form"
+            android:drawableStart="@drawable/key"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginTop="12dp"
+            android:inputType="textPassword"
+            android:hint="@string/hint_buat_password" />
+
+        <EditText
+            android:id="@+id/et_reg_confirm_pass"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/form"
+            android:drawableStart="@drawable/key"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginTop="12dp"
+            android:inputType="textPassword"
+            android:hint="@string/hint_konfirmasi_password" />
+
+        <Button
+            android:id="@+id/btn_register"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_tombol"
+            android:text="@string/register"
+            android:textAllCaps="false"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#ffffff"
+            android:layout_marginTop="20dp"/>
+
+        <TextView
+            android:textColor="#ffffff"
+            android:text="@string/sudah_punya_akun"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"/>
+
+        <TextView
+            android:id="@+id/tv_login"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textColor="#ffffff"
+            android:text="@string/lbl_masuk"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+</LinearLayout>
