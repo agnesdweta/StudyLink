@@ -1,35 +1,40 @@
 package com.example.studylink;
 
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import android.view.MenuItem;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CoursesActivity extends AppCompatActivity {
+
+    RecyclerView rvCourses;
+    CourseAdapter adapter;
+    List<Course> courses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_courses);
 
-        // Ambil toolbar dari include
-        Toolbar toolbar = findViewById(R.id.toolbarInclude);
-        setSupportActionBar(toolbar);
+        findViewById(R.id.btnBack).setOnClickListener(v -> {
+            finish(); // kembali ke Dashboard
+        });
 
-        // Aktifkan tombol back
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Courses");
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-    }
+        rvCourses = findViewById(R.id.rvCourses);
+        rvCourses.setLayoutManager(new LinearLayoutManager(this));
 
-    // Fungsi tombol back di toolbar
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish(); // kembali ke halaman sebelumnya
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        // DATA DUMMY
+        courses = new ArrayList<>();
+        courses.add(new Course("Pemrograman Java", "3 SKS"));
+        courses.add(new Course("Mobile Programming", "3 SKS"));
+        courses.add(new Course("Basis Data", "3 SKS"));
+        courses.add(new Course("Rekayasa Perangkat Lunak", "4 SKS"));
+
+        adapter = new CourseAdapter(courses);
+        rvCourses.setAdapter(adapter);
     }
 }

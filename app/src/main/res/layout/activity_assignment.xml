@@ -14,15 +14,15 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Daftar Mata Kuliah"
+        android:text="@string/assignments"
         android:textSize="18sp"
         android:textStyle="bold"
         android:padding="12dp"
         android:background="#E3F2FD"/>
 
-    <!-- RecyclerView untuk Courses -->
+    <!-- RecyclerView untuk Assignment -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvCourses"
+        android:id="@+id/rvAssignment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>

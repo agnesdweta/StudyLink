@@ -13,7 +13,6 @@
         android:layout_height="180dp"
         android:background="@drawable/bg_gradasi"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -153,7 +152,7 @@
                 app:srcCompat="@drawable/img_3" />
 
             <TextView
-                android:id="@+id/menuAssignments"
+                android:id="@+id/menuAssignment"
                 android:layout_width="wrap_content"
                 android:layout_height="18dp"
                 android:layout_gravity="center"
@@ -334,7 +333,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/menuRow2"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        android:clickable="false"
+        android:focusable="false">
 
         <LinearLayout
             android:id="@+id/navHome"

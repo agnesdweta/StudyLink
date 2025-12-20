@@ -2,7 +2,6 @@ package com.example.studylink;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -17,14 +16,19 @@ public class DashboardActivity extends AppCompatActivity {
     private LinearLayout menuCalendarLayout;
     private LinearLayout menuForumLayout;
     private LinearLayout menuCoursesLayout;
-    private LinearLayout menuScheduleLayout;
     private LinearLayout menuAssignmentLayout;
+    private LinearLayout menuScheduleLayout;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+        LinearLayout menuRow1 = findViewById(R.id.menuRow1);
+        menuRow1.bringToFront();
+        menuRow1.invalidate();
+        menuRow1.requestLayout();
 
         navHome = findViewById(R.id.navHome);
         navNotif = findViewById(R.id.navNotif);
@@ -34,8 +38,8 @@ public class DashboardActivity extends AppCompatActivity {
         menuForumLayout = findViewById(R.id.menuForumLayout);
         menuCoursesLayout = findViewById(R.id.menuCourses);
         menuCalendarLayout = findViewById(R.id.menuCalendarLayout);
-        menuScheduleLayout = findViewById(R.id.menuScheduleLayout);
         menuAssignmentLayout = findViewById(R.id.menuAssignmentLayout);
+        menuScheduleLayout = findViewById(R.id.menuScheduleLayout);
 
         navHome.setOnClickListener(v ->
                 Toast.makeText(this, "Home diklik", Toast.LENGTH_SHORT).show()
@@ -71,11 +75,11 @@ public class DashboardActivity extends AppCompatActivity {
         menuCoursesLayout.setOnClickListener(v ->
                 startActivity(new Intent(this, CoursesActivity.class))
         );
-        menuScheduleLayout.setOnClickListener(v ->
-                startActivity(new Intent(this, ScheduleActivity.class))
-        );
         menuAssignmentLayout.setOnClickListener(v ->
                 startActivity(new Intent(this, AssignmentActivity.class))
+        );
+        menuScheduleLayout.setOnClickListener(v ->
+                startActivity(new Intent(this, ScheduleActivity.class))
         );
     }
 }
