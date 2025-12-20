@@ -2,6 +2,7 @@ package com.example.studylink;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -16,6 +17,7 @@ public class DashboardActivity extends AppCompatActivity {
     private LinearLayout menuCalendarLayout;
     private LinearLayout menuForumLayout;
     private LinearLayout menuCoursesLayout;
+    private LinearLayout menuScheduleLayout;
     private LinearLayout menuAssignmentLayout;
 
 
@@ -32,6 +34,7 @@ public class DashboardActivity extends AppCompatActivity {
         menuForumLayout = findViewById(R.id.menuForumLayout);
         menuCoursesLayout = findViewById(R.id.menuCourses);
         menuCalendarLayout = findViewById(R.id.menuCalendarLayout);
+        menuScheduleLayout = findViewById(R.id.menuScheduleLayout);
         menuAssignmentLayout = findViewById(R.id.menuAssignmentLayout);
 
         navHome.setOnClickListener(v ->
@@ -68,10 +71,11 @@ public class DashboardActivity extends AppCompatActivity {
         menuCoursesLayout.setOnClickListener(v ->
                 startActivity(new Intent(this, CoursesActivity.class))
         );
-        menuAssignmentLayout.setOnClickListener(v -> {
-            Toast.makeText(DashboardActivity.this, "Assignment diklik", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(DashboardActivity.this, AssignmentActivity.class);
-            startActivity(intent);
-        });
+        menuScheduleLayout.setOnClickListener(v ->
+                startActivity(new Intent(this, ScheduleActivity.class))
+        );
+        menuAssignmentLayout.setOnClickListener(v ->
+                startActivity(new Intent(this, AssignmentActivity.class))
+        );
     }
 }
