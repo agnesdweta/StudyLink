@@ -40,7 +40,6 @@ public class LoginActivity extends AppCompatActivity {
         tvDaftar.setOnClickListener(v ->
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class))
         );
-        
     }
 
     private void prosesLogin() {

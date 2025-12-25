@@ -1,6 +1,7 @@
 package com.example.studylink.api;
 
 import com.example.studylink.Assignment;
+import com.example.studylink.Schedule;
 import com.example.studylink.model.LoginRequest;
 import com.example.studylink.model.LoginResponse;
 import com.example.studylink.model.RegisterRequest;
@@ -12,6 +13,8 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
@@ -43,4 +46,32 @@ public interface ApiService {
     @GET("assignments")
     Call<List<Assignment>> getAssignments(
             @Header("Authorization") String token
-    );}
+    );
+    @POST("assignments")
+    Call<Assignment> addAssignment(
+            @Header("Authorization") String token,
+            @Body Assignment assignment
+    );
+    @PUT("assignments/{id}")
+    Call<Assignment> updateAssignment(
+            @Header("Authorization") String token,
+            @Path("id") int id,
+            @Body Assignment assignment
+    );
+    @DELETE("assignments/{id}")
+    Call<Void> deleteAssignment(
+            @Header("Authorization") String token,
+            @Path("id") int id
+    );
+    @GET("schedules")
+    Call<List<Schedule>> getSchedules();
+
+    @POST("schedules")
+    Call<Schedule> addSchedule(@Body Schedule schedule);
+    @PUT("schedules/{id}")
+    Call<Schedule> updateSchedule(@Path("id") int id, @Body Schedule schedule);
+
+    @DELETE("schedules/{id}")
+    Call<Void> deleteSchedule(@Path("id") int id);
+}
+
