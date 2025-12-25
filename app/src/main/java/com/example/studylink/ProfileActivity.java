@@ -11,7 +11,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.studylink.db.DBHelper;
+
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -19,7 +19,7 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView tvFirstName, tvLastName, tvEmail;
     private ImageView btnBack;
     private ActivityResultLauncher<Intent> editProfileLauncher;
-    private DBHelper dbHelper; // 🔥 DBHelper global
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,12 +39,12 @@ public class ProfileActivity extends AppCompatActivity {
         // =======================
         // INIT DB
         // =======================
-        dbHelper = new DBHelper(this);
+
 
         // =======================
         // LOAD DATA USER
         // =======================
-        loadUserProfile();
+
 
         // =======================
         // ACTIVITY RESULT LAUNCHER
@@ -85,29 +85,12 @@ public class ProfileActivity extends AppCompatActivity {
     // =======================
     // METHOD: LOAD USER PROFILE DARI SQLITE
     // =======================
-    private void loadUserProfile() {
-        Cursor cursor = dbHelper.getUser();
-        if (cursor != null && cursor.moveToFirst()) {
-            String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
-            String email = cursor.getString(cursor.getColumnIndexOrThrow("email"));
 
-            if (name.contains(" ")) {
-                String[] parts = name.split(" ", 2);
-                tvFirstName.setText(parts[0]);
-                tvLastName.setText(parts[1]);
-            } else {
-                tvFirstName.setText(name);
-                tvLastName.setText("");
-            }
-            tvEmail.setText(email);
-            cursor.close();
-        }
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
         // reload otomatis ketika kembali dari EditProfileActivity
-        loadUserProfile();
+
     }
 }

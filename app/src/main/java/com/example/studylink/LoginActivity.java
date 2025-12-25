@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import com.example.studylink.api.ApiService;
 import com.example.studylink.api.RetrofitClient;
-import com.example.studylink.db.DBHelper;
+
 import com.example.studylink.model.LoginRequest;
 import com.example.studylink.model.LoginResponse;
 import com.example.studylink.util.TokenManager;
@@ -58,14 +58,12 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
 
-                if (response.isSuccessful() && response.body() != null) {
+                if (response.isSuccessful()) {
                     LoginResponse res = response.body();
 
                     TokenManager tokenManager = new TokenManager(LoginActivity.this);
                     tokenManager.save(res.getToken(), res.getUsername());
 
-                    DBHelper dbHelper = new DBHelper(LoginActivity.this);
-                    dbHelper.insertUser(res.getUsername());
 
                     Toast.makeText(LoginActivity.this, "Login Berhasil", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(LoginActivity.this, DashboardActivity.class));

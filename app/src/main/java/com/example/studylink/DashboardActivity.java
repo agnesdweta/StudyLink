@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.studylink.db.DBHelper;
+
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -21,7 +21,7 @@ public class DashboardActivity extends AppCompatActivity {
             menuAssignmentLayout, menuScheduleLayout;
 
     private TextView txtUserName;
-    private DBHelper dbHelper; // 🔥 jadikan global
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,12 +31,14 @@ public class DashboardActivity extends AppCompatActivity {
         // =========================
         // INIT DB
         // =========================
-        dbHelper = new DBHelper(this);
+
 
         // =========================
         // FIND VIEW
         // =========================
         txtUserName = findViewById(R.id.txtUsername);
+
+
         navHome = findViewById(R.id.navHome);
         navNotif = findViewById(R.id.navNotif);
         navProfil = findViewById(R.id.navProfil);
@@ -55,7 +57,7 @@ public class DashboardActivity extends AppCompatActivity {
         // =========================
         // LOAD USER FIRST TIME
         // =========================
-        loadUserName();
+
 
         // =========================
         // NAVIGATION
@@ -73,7 +75,7 @@ public class DashboardActivity extends AppCompatActivity {
         );
 
         btnLogout.setOnClickListener(v -> {
-            dbHelper.deleteUser();
+
             Toast.makeText(this, "Logout berhasil", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, LoginActivity.class));
             finish();
@@ -98,28 +100,15 @@ public class DashboardActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ScheduleActivity.class))
         );
     }
+}
+
 
     // =========================
     // REFRESH SETIAP BALIK KE DASHBOARD
     // =========================
-    @Override
-    protected void onResume() {
-        super.onResume();
-        loadUserName();
-    }
+
 
     // =========================
     // AMBIL USER DARI SQLITE
     // =========================
-    private void loadUserName() {
-        Cursor cursor = dbHelper.getUser();
-        if (cursor != null && cursor.moveToFirst()) {
-            txtUserName.setText(
-                    cursor.getString(cursor.getColumnIndexOrThrow("name"))
-            );
-            cursor.close();
-        } else {
-            txtUserName.setText("User");
-        }
-    }
-}
+

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    card_view:cardCornerRadius="10dp"
+    card_view:cardCornerRadius="12dp"
     card_view:cardElevation="4dp">
 
     <LinearLayout
@@ -13,6 +13,7 @@
         android:orientation="vertical"
         android:padding="12dp">
 
+        <!-- BAGIAN TEKS -->
         <TextView
             android:id="@+id/txtAssignmentTitle"
             android:layout_width="wrap_content"
@@ -34,9 +35,38 @@
             android:id="@+id/txtAssignmentDeadline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Deadline: 20 Des 2025"
+            android:text="Deadline"
             android:textSize="12sp"
             android:textColor="#D32F2F"
             android:layout_marginTop="6dp"/>
+
+        <!-- GARIS PEMISAH -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#DDDDDD"
+            android:layout_marginVertical="8dp"/>
+
+        <!-- BAGIAN TOMBOL -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/btnEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit"/>
+
+            <Button
+                android:id="@+id/btnDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -1,5 +1,6 @@
 package com.example.studylink.api;
 
+import com.example.studylink.Assignment;
 import com.example.studylink.model.LoginRequest;
 import com.example.studylink.model.LoginResponse;
 import com.example.studylink.model.RegisterRequest;
@@ -12,6 +13,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
@@ -37,4 +39,9 @@ public interface ApiService {
 
     @DELETE("posts/{id}")
     Call<Void> deletePost(@Path("id") int id);
+
+    @GET("assignments")
+    Call<List<Assignment>> getAssignments(
+            @Header("Authorization") String token
+    );
 }

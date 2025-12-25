@@ -3,6 +3,7 @@ package com.example.studylink;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,14 +13,15 @@ import java.util.List;
 
 public class ExamAdapter extends RecyclerView.Adapter<ExamAdapter.ViewHolder> {
 
-    public interface OnItemClickListener {
-        void onItemClick(Exam exam);
+    public interface OnActionListener {
+        void onEdit(ExamEntity exam, int position);
+        void onDelete(ExamEntity exam, int position);
     }
 
-    private List<Exam> exams;
-    private OnItemClickListener listener;
+    private List<ExamEntity> exams;
+    private OnActionListener listener;
 
-    public ExamAdapter(List<Exam> exams, OnItemClickListener listener) {
+    public ExamAdapter(List<ExamEntity> exams, OnActionListener listener) {
         this.exams = exams;
         this.listener = listener;
     }
@@ -34,13 +36,20 @@ public class ExamAdapter extends RecyclerView.Adapter<ExamAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Exam exam = exams.get(position);
+        ExamEntity exam = exams.get(position);
 
-        holder.txtTitle.setText(exam.getTitle());
+        holder.txtTitle.setText(exam.getExamType());
         holder.txtCourse.setText(exam.getCourse());
-        holder.txtDate.setText("Tanggal: " + exam.getDate());
+        holder.txtDate.setText("Tanggal: " + exam.getExamDate());
 
-        holder.itemView.setOnClickListener(v -> listener.onItemClick(exam));
+        holder.btnEdit.setOnClickListener(v -> {
+                    if (listener != null)
+                        listener.onEdit(exam, holder.getAdapterPosition());
+                });
+        holder.btnDelete.setOnClickListener(v -> {
+            if (listener != null)
+                listener.onDelete(exam, holder.getAdapterPosition());
+        });
     }
 
     @Override
@@ -50,12 +59,15 @@ public class ExamAdapter extends RecyclerView.Adapter<ExamAdapter.ViewHolder> {
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView txtTitle, txtCourse, txtDate;
+        Button btnEdit, btnDelete;
 
         ViewHolder(View itemView) {
             super(itemView);
             txtTitle = itemView.findViewById(R.id.txtExamTitle);
             txtCourse = itemView.findViewById(R.id.txtExamCourse);
             txtDate = itemView.findViewById(R.id.txtExamDate);
+            btnEdit = itemView.findViewById(R.id.btnEdit);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }
 }

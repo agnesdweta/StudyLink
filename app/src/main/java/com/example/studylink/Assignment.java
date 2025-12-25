@@ -23,4 +23,15 @@ public class Assignment {
     public String getDeadline() {
         return deadline;
     }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    public void setCourse(String course) {
+        this.course = course;
+    }
+    public void setDeadline(String deadline) {
+        this.deadline = deadline;
+    }
+
 }
