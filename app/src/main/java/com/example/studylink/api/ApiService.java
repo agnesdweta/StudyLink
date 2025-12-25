@@ -43,5 +43,4 @@ public interface ApiService {
     @GET("assignments")
     Call<List<Assignment>> getAssignments(
             @Header("Authorization") String token
-    );
-}
+    );}

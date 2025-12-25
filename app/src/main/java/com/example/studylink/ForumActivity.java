@@ -113,5 +113,6 @@ public class ForumActivity extends AppCompatActivity {
                         "Gagal mengirim komentar", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 }
