@@ -1,7 +1,12 @@
 package com.example.studylink;
 
 public class Exam {
-    String title, course, date;
+    private int id;
+    private String title;
+    private String course;
+    private String date;
+
+    public Exam() {}
 
     public Exam(String title, String course, String date) {
         this.title = title;
@@ -9,15 +14,23 @@ public class Exam {
         this.date = date;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public String getCourse() {
-        return course;
-    }
-
+    public int getId() { return id; }
+    public String getTitle() { return title; }
+    public String getCourse() { return course; }
     public String getDate() {
-        return date;
+        return date;}
+
+    public void setId(int id) { this.id = id; }
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setCourse(String course) {
+        this.course = course;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }
+

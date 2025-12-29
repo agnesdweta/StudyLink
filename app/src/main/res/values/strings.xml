@@ -117,4 +117,9 @@
     <string name="assignments">Assignments</string>
     <string name="exam">Exam</string>
     <string name="schedule">Schedule</string>
+    <string name="nama_mata_kuliah">Nama Mata Kuliah</string>
+    <string name="deskripsi">Deskripsi</string>
+    <string name="waktu">Waktu</string>
+    <string name="daftar_mata_kuliah">Daftar Mata Kuliah</string>
+    <string name="tambah_course">Tambah Course</string>
 </resources>

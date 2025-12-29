@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHolder> {
@@ -16,11 +17,11 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         void onItemClick(Schedule schedule);
     }
 
-    List<Schedule> list;
-    OnItemClickListener listener;
+    private List<Schedule> list;
+    private final OnItemClickListener listener;
 
     public ScheduleAdapter(List<Schedule> list, OnItemClickListener listener) {
-        this.list = list;
+        this.list = (list != null) ? list : new ArrayList<>();
         this.listener = listener;
     }
 
@@ -41,25 +42,32 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         holder.tvTime.setText(s.getTime());
 
         holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onItemClick(s);
+            int pos = holder.getAdapterPosition();
+            if (pos != RecyclerView.NO_POSITION && listener != null) {
+                listener.onItemClick(list.get(pos));
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return list != null ? list.size() : 0;
+    }
+
+    // 🔥 METHOD PENTING untuk update data
+    public void updateData(List<Schedule> newList) {
+        this.list = (newList != null) ? newList : new ArrayList<>();
+        notifyDataSetChanged();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvTitle, tvDate, tvTime;
 
-        ViewHolder(View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTitle);
-            tvDate = itemView.findViewById(R.id.tvDate);
-            tvTime = itemView.findViewById(R.id.tvTime);
+            tvDate  = itemView.findViewById(R.id.tvDate);
+            tvTime  = itemView.findViewById(R.id.tvTime);
         }
     }
 }

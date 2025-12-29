@@ -1,24 +1,80 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:padding="12dp"
     android:background="@drawable/white_bg"
-    android:layout_marginBottom="10dp"
-    android:elevation="4dp">
+    android:elevation="2dp"
+    android:layout_marginBottom="8dp">
 
+    <!-- Nama Mata Kuliah -->
     <TextView
         android:id="@+id/txtCourseName"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="Matematika"
         android:textSize="16sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:textColor="@android:color/black"/>
 
+    <!-- Waktu Mata Kuliah -->
     <TextView
-        android:id="@+id/txtSks"
-        android:layout_width="wrap_content"
+        android:id="@+id/txtCourseTime"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="Senin, 08:00-10:00"
         android:textSize="14sp"
-        android:textColor="#666666"/>
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginTop="2dp"/>
+
+    <!-- Deskripsi Mata Kuliah -->
+    <TextView
+        android:id="@+id/txtCourseDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Belajar Matematika Dasar"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginTop="2dp"/>
+
+    <!-- Dosen / Pengajar -->
+    <TextView
+        android:id="@+id/txtCourseInstructor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Dosen: Pak Budi"
+        android:textStyle="italic"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="4dp"/>
+
+    <!-- Tombol Aksi -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_marginTop="4dp">
+
+        <Button
+            android:id="@+id/btnEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit"/>
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete"
+            android:layout_marginStart="8dp"/>
+
+        <Button
+            android:id="@+id/btnMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pesan"
+            android:layout_marginStart="8dp"/>
+    </LinearLayout>
 </LinearLayout>

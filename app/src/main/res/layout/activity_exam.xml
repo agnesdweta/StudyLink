@@ -20,6 +20,21 @@
         android:padding="12dp"
         android:background="#E3F2FD"/>
 
+    <!-- RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvExam"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- BUTTON HARUS DI BAWAH -->
     <Button
         android:id="@+id/btnStartExam"
         android:layout_width="match_parent"
@@ -28,11 +43,4 @@
         android:layout_margin="12dp"
         android:backgroundTint="#2196F3"
         android:textColor="#FFFFFF"/>
-
-    <!-- RecyclerView untuk Exam -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvExam"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
 </LinearLayout>

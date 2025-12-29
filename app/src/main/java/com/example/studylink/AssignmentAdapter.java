@@ -16,6 +16,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.Vi
     public interface OnActionListener {
         void onEdit(AssignmentEntity assignment, int position);
         void onDelete(AssignmentEntity assignment, int position);
+        void onUpload(AssignmentEntity assignment);
     }
 
     private List<AssignmentEntity> assignments;
@@ -50,6 +51,10 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.Vi
             if (listener != null)
                 listener.onDelete(assignment,holder.getAdapterPosition());
         });
+        holder.btnUpload.setOnClickListener(v -> {
+            if (listener != null)
+                listener.onUpload(assignment); // 🔹 Panggil listener Upload
+        });
     }
 
     @Override
@@ -59,7 +64,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.Vi
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView txtTitle, txtCourse, txtDeadline;
-        Button btnEdit, btnDelete;
+        Button btnEdit, btnDelete, btnUpload;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -68,6 +73,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.Vi
             txtDeadline = itemView.findViewById(R.id.txtAssignmentDeadline);
             btnEdit = itemView.findViewById(R.id.btnEdit);
             btnDelete = itemView.findViewById(R.id.btnDelete);
+            btnUpload = itemView.findViewById(R.id.btnUploadAssignment);
         }
     }
 }

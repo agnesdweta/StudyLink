@@ -7,10 +7,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.studylink.api.ApiService;
 import com.example.studylink.api.RetrofitClient;
-
 import com.example.studylink.model.LoginRequest;
 import com.example.studylink.model.LoginResponse;
 import com.example.studylink.util.TokenManager;
@@ -51,19 +49,16 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
+        ApiService api = RetrofitClient.getService();
         LoginRequest request = new LoginRequest(username, password);
 
         api.login(request).enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-
-                if (response.isSuccessful()) {
+                if (response.isSuccessful() && response.body() != null) {
                     LoginResponse res = response.body();
-
                     TokenManager tokenManager = new TokenManager(LoginActivity.this);
                     tokenManager.save(res.getToken(), res.getUsername());
-
 
                     Toast.makeText(LoginActivity.this, "Login Berhasil", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(LoginActivity.this, DashboardActivity.class));

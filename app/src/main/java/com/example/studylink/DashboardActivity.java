@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.studylink.util.TokenManager;
 
 
 public class DashboardActivity extends AppCompatActivity {
@@ -28,17 +29,10 @@ public class DashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
-        // =========================
-        // INIT DB
-        // =========================
-
-
-        // =========================
-        // FIND VIEW
-        // =========================
         txtUserName = findViewById(R.id.txtUsername);
-
-
+        TokenManager tokenManager = new TokenManager(this);
+        String username = tokenManager.getUsername();
+        txtUserName.setText("Hallo, " + username);
         navHome = findViewById(R.id.navHome);
         navNotif = findViewById(R.id.navNotif);
         navProfil = findViewById(R.id.navProfil);
@@ -54,14 +48,6 @@ public class DashboardActivity extends AppCompatActivity {
         LinearLayout menuRow1 = findViewById(R.id.menuRow1);
         menuRow1.bringToFront();
 
-        // =========================
-        // LOAD USER FIRST TIME
-        // =========================
-
-
-        // =========================
-        // NAVIGATION
-        // =========================
         navHome.setOnClickListener(v ->
                 Toast.makeText(this, "Home diklik", Toast.LENGTH_SHORT).show()
         );
@@ -91,7 +77,7 @@ public class DashboardActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ForumActivity.class))
         );
         menuCoursesLayout.setOnClickListener(v ->
-                startActivity(new Intent(this, CoursesActivity.class))
+                startActivity(new Intent(this, CourseActivity.class))
         );
         menuAssignmentLayout.setOnClickListener(v ->
                 startActivity(new Intent(this, AssignmentActivity.class))
@@ -102,13 +88,4 @@ public class DashboardActivity extends AppCompatActivity {
     }
 }
 
-
-    // =========================
-    // REFRESH SETIAP BALIK KE DASHBOARD
-    // =========================
-
-
-    // =========================
-    // AMBIL USER DARI SQLITE
-    // =========================
 

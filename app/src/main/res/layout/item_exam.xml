@@ -1,29 +1,34 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="12dp"
-    android:layout_margin="8dp"
-    android:background="@drawable/white_bg">
+    android:background="?attr/selectableItemBackground">
 
     <TextView
-        android:id="@+id/txtExamTitle"
-        android:textStyle="bold"
+        android:id="@+id/tvExamTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Judul Ujian"
         android:textSize="16sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:textStyle="bold"/>
 
     <TextView
-        android:id="@+id/txtExamCourse"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:id="@+id/tvExamCourse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mata Pelajaran"
+        android:textSize="14sp"
+        android:layout_marginTop="2dp"/>
 
     <TextView
-        android:id="@+id/txtExamDate"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:id="@+id/tvExamDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tanggal"
+        android:textSize="14sp"
+        android:layout_marginTop="2dp"
+        android:textColor="#555555"/>
 </LinearLayout>

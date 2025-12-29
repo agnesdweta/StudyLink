@@ -3,7 +3,6 @@ package com.example.studylink;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,17 +12,10 @@ import java.util.List;
 
 public class ExamAdapter extends RecyclerView.Adapter<ExamAdapter.ViewHolder> {
 
-    public interface OnActionListener {
-        void onEdit(ExamEntity exam, int position);
-        void onDelete(ExamEntity exam, int position);
-    }
+    private final List<Exam> exams;
 
-    private List<ExamEntity> exams;
-    private OnActionListener listener;
-
-    public ExamAdapter(List<ExamEntity> exams, OnActionListener listener) {
+    public ExamAdapter(List<Exam> exams) {
         this.exams = exams;
-        this.listener = listener;
     }
 
     @NonNull
@@ -36,20 +28,10 @@ public class ExamAdapter extends RecyclerView.Adapter<ExamAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ExamEntity exam = exams.get(position);
-
-        holder.txtTitle.setText(exam.getExamType());
+        Exam exam = exams.get(position);
+        holder.txtTitle.setText(exam.getTitle());
         holder.txtCourse.setText(exam.getCourse());
-        holder.txtDate.setText("Tanggal: " + exam.getExamDate());
-
-        holder.btnEdit.setOnClickListener(v -> {
-                    if (listener != null)
-                        listener.onEdit(exam, holder.getAdapterPosition());
-                });
-        holder.btnDelete.setOnClickListener(v -> {
-            if (listener != null)
-                listener.onDelete(exam, holder.getAdapterPosition());
-        });
+        holder.txtDate.setText("Tanggal: " + exam.getDate());
     }
 
     @Override
@@ -59,15 +41,12 @@ public class ExamAdapter extends RecyclerView.Adapter<ExamAdapter.ViewHolder> {
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView txtTitle, txtCourse, txtDate;
-        Button btnEdit, btnDelete;
 
         ViewHolder(View itemView) {
             super(itemView);
-            txtTitle = itemView.findViewById(R.id.txtExamTitle);
-            txtCourse = itemView.findViewById(R.id.txtExamCourse);
-            txtDate = itemView.findViewById(R.id.txtExamDate);
-            btnEdit = itemView.findViewById(R.id.btnEdit);
-            btnDelete = itemView.findViewById(R.id.btnDelete);
+            txtTitle = itemView.findViewById(R.id.tvExamTitle);
+            txtCourse = itemView.findViewById(R.id.tvExamCourse);
+            txtDate = itemView.findViewById(R.id.tvExamDate);
         }
     }
 }

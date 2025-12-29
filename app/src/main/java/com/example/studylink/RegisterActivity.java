@@ -1,18 +1,17 @@
 package com.example.studylink;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.studylink.api.ApiService;
 import com.example.studylink.api.RetrofitClient;
 import com.example.studylink.model.RegisterRequest;
 import com.example.studylink.model.RegisterResponse;
+import com.example.studylink.util.TokenManager;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,7 +36,6 @@ public class RegisterActivity extends AppCompatActivity {
         tvLogin        = findViewById(R.id.tv_login);
 
         btnRegister.setOnClickListener(v -> prosesRegister());
-
         tvLogin.setOnClickListener(v ->
                 startActivity(new Intent(RegisterActivity.this, LoginActivity.class))
         );
@@ -59,7 +57,7 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
+        ApiService api = RetrofitClient.getService();
         RegisterRequest request = new RegisterRequest(username, password);
 
         api.register(request).enqueue(new Callback<RegisterResponse>() {
@@ -67,14 +65,13 @@ public class RegisterActivity extends AppCompatActivity {
             public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
 
                 if (response.isSuccessful() && response.body() != null) {
+                    RegisterResponse res = response.body();
+                    TokenManager tokenManager = new TokenManager(RegisterActivity.this);
+                    tokenManager.save(res.getToken(), res.getUsername());
 
-                    Toast.makeText(RegisterActivity.this,
-                            "Register berhasil, silakan login",
-                            Toast.LENGTH_SHORT).show();
-
+                    Toast.makeText(RegisterActivity.this, "Register berhasil", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                     finish();
-
                 } else {
                     Toast.makeText(RegisterActivity.this,
                             "Register gagal (username sudah dipakai)",

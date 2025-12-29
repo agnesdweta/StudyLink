@@ -20,6 +20,7 @@ public class Schedule {
         this.id = id;
         this.title = title;
         this.date = date;
+        this.time = time;
     }
 
         // Getter

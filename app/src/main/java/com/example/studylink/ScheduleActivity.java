@@ -13,8 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.studylink.api.ApiService;
 import com.example.studylink.api.RetrofitClient;
 import com.example.studylink.db.AppDatabase;
-import com.example.studylink.db.ScheduleDao;
-import com.example.studylink.db.ScheduleEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,56 +23,86 @@ import retrofit2.Response;
 
 public class ScheduleActivity extends AppCompatActivity {
 
-    RecyclerView rvSchedule;
-    ScheduleAdapter adapter;
-    List<Schedule> scheduleList;
-    ApiService apiService;
-    AppDatabase db;
-    ScheduleDao scheduleDao;
+    private ScheduleDao dao;
+    private ApiService api;
+    private ScheduleAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule);
 
-        rvSchedule = findViewById(R.id.rvSchedule);
-        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+        dao = AppDatabase.getInstance(this).scheduleDao();
+        api = RetrofitClient.getService();
+
+        RecyclerView rv = findViewById(R.id.rvSchedule);
+        rv.setLayoutManager(new LinearLayoutManager(this));
+
+        adapter = new ScheduleAdapter(new ArrayList<>(), this::showEditDelete);
+        rv.setAdapter(adapter);
+
         findViewById(R.id.btnAdd).setOnClickListener(v -> showAddDialog());
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
-        scheduleList = new ArrayList<>();
-        adapter = new ScheduleAdapter(scheduleList, schedule -> showEditDeleteDialog(schedule));
-        rvSchedule.setLayoutManager(new LinearLayoutManager(this));
-        rvSchedule.setAdapter(adapter);
-
-        // Inisialisasi API & Room DB
-        apiService = RetrofitClient.getService();
-        db = AppDatabase.getInstance(this);
-        scheduleDao = db.scheduleDao();
-
-        // Load data dari Room dulu
-        loadFromLocal();
-
-        // Load dari API (online)
-        loadSchedules();
+        loadFromRoom();
+        syncFromApi();
     }
 
-    // ================== LOAD DATA LOCAL ==================
-    private void loadFromLocal() {
-        List<ScheduleEntity> local = scheduleDao.getAllSchedules();
-        scheduleList.clear();
-        for (ScheduleEntity e : local) {
-            scheduleList.add(new Schedule(e.getId(), e.getTitle(), e.getDate(), e.getTime()));
-        }
-        adapter.notifyDataSetChanged();
+    // ================= LOAD ROOM =================
+    private void loadFromRoom() {
+        new Thread(() -> {
+            List<ScheduleEntity> data = dao.getAll();
+            List<Schedule> temp = new ArrayList<>();
+
+            for (ScheduleEntity e : data) {
+                temp.add(new Schedule(
+                        e.getId(),
+                        e.getTitle(),
+                        e.getDate(),
+                        e.getTime()
+                ));
+            }
+
+            runOnUiThread(() -> adapter.updateData(temp));
+        }).start();
     }
 
-    // ================== ADD DIALOG ==================
+    // ================= SYNC API =================
+    private void syncFromApi() {
+        api.getSchedules().enqueue(new Callback<List<Schedule>>() {
+            @Override
+            public void onResponse(Call<List<Schedule>> call, Response<List<Schedule>> response) {
+                if (!response.isSuccessful() || response.body() == null) return;
+
+                new Thread(() -> {
+                    dao.deleteAll(); // ⬅️ WAJIB
+                    for (Schedule s : response.body()) {
+                        dao.insert(new ScheduleEntity(
+                                s.getId(),
+                                s.getTitle(),
+                                s.getDate(),
+                                s.getTime()
+                        ));
+                    }
+                    runOnUiThread(() -> loadFromRoom());
+                }).start();
+            }
+
+            @Override
+            public void onFailure(Call<List<Schedule>> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
+    // ================= ADD =================
     private void showAddDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Tambah Schedule");
 
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(32, 16, 32, 16);
 
         EditText etTitle = new EditText(this);
         etTitle.setHint("Title");
@@ -89,160 +117,124 @@ public class ScheduleActivity extends AppCompatActivity {
         layout.addView(etTime);
 
         builder.setView(layout);
-
-        builder.setPositiveButton("Simpan", (dialog, which) -> {
-            String title = etTitle.getText().toString().trim();
-            String date = etDate.getText().toString().trim();
-            String time = etTime.getText().toString().trim();
-            Schedule schedule = new Schedule(title, date, time);
-
-            // Tambah ke API
-            addSchedule(schedule);
-
-            // Tambah ke Room DB
-            ScheduleEntity local = new ScheduleEntity(title, date, time);
-            scheduleDao.insert(local);
-
-            // Refresh list dari lokal
-            loadFromLocal();
+        builder.setPositiveButton("Simpan", (d, w) -> {
+            if (etTitle.getText().toString().isEmpty()
+                    || etDate.getText().toString().isEmpty()
+                    || etTime.getText().toString().isEmpty()) {
+                Toast.makeText(this, "Data tidak boleh kosong", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            addSchedule(etTitle.getText().toString(), etDate.getText().toString(), etTime.getText().toString());
         });
 
         builder.setNegativeButton("Batal", null);
         builder.show();
     }
 
-    // ================== ADD API ==================
-    private void addSchedule(Schedule schedule) {
-        apiService.addSchedule(schedule).enqueue(new Callback<Schedule>() {
-            @Override
-            public void onResponse(Call<Schedule> call, Response<Schedule> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(ScheduleActivity.this, "Schedule ditambahkan (API)", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(ScheduleActivity.this, "Gagal API: " + response.code(), Toast.LENGTH_SHORT).show();
-                }
-            }
+    private void addSchedule(String title, String date, String time) {
+        api.addSchedule(new Schedule(title, date, time))
+                .enqueue(new Callback<Schedule>() {
+                    @Override
+                    public void onResponse(Call<Schedule> call, Response<Schedule> response) {
+                        if (response.body() == null) return;
+                        Schedule s = response.body();
+                        new Thread(() -> {
+                            dao.insert(new ScheduleEntity(
+                                    s.getId(),
+                                    s.getTitle(),
+                                    s.getDate(),
+                                    s.getTime()
+                            ));
+                            runOnUiThread(() -> loadFromRoom());
+                        }).start();
+                    }
 
-            @Override
-            public void onFailure(Call<Schedule> call, Throwable t) {
-                Toast.makeText(ScheduleActivity.this, "API error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onFailure(Call<Schedule> call, Throwable t) {
+                        t.printStackTrace();
+                    }
+                });
     }
 
-    // ================== EDIT / DELETE DIALOG ==================
-    private void showEditDeleteDialog(Schedule schedule) {
+    // ================= EDIT / DELETE =================
+    private void showEditDelete(Schedule s) {
+        new AlertDialog.Builder(this)
+                .setItems(new String[]{"Edit", "Delete"}, (d, w) -> {
+                    if (w == 0) showEditDialog(s);
+                    else deleteSchedule(s.getId());
+                }).show();
+    }
+
+    private void showEditDialog(Schedule s) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Edit / Delete Schedule");
+        builder.setTitle("Edit Schedule");
 
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
 
         EditText etTitle = new EditText(this);
-        etTitle.setText(schedule.getTitle());
+        etTitle.setText(s.getTitle());
         layout.addView(etTitle);
 
         EditText etDate = new EditText(this);
-        etDate.setText(schedule.getDate());
+        etDate.setText(s.getDate());
         layout.addView(etDate);
 
         EditText etTime = new EditText(this);
-        etTime.setText(schedule.getTime());
+        etTime.setText(s.getTime());
         layout.addView(etTime);
 
         builder.setView(layout);
-
-        builder.setPositiveButton("Update", (dialog, which) -> {
-            schedule.setTitle(etTitle.getText().toString());
-            schedule.setDate(etDate.getText().toString());
-            schedule.setTime(etTime.getText().toString());
-
-            updateSchedule(schedule);
-
-            // Update Room DB
-            ScheduleEntity local = new ScheduleEntity(schedule.getTitle(), schedule.getDate(), schedule.getTime());
-            local.setId(schedule.getId());
-            scheduleDao.update(local);
-
-            // Refresh list lokal
-            loadFromLocal();
-        });
-
-        builder.setNeutralButton("Delete", (dialog, which) -> {
-            deleteSchedule(schedule.getId());
-
-            // Delete Room DB
-            ScheduleEntity local = new ScheduleEntity(schedule.getTitle(), schedule.getDate(), schedule.getTime());
-            local.setId(schedule.getId());
-            scheduleDao.delete(local);
-
-            // Refresh list lokal
-            loadFromLocal();
-        });
-
+        builder.setPositiveButton("Update", (d, w) ->
+                updateSchedule(s.getId(),
+                        etTitle.getText().toString(),
+                        etDate.getText().toString(),
+                        etTime.getText().toString())
+        );
         builder.setNegativeButton("Batal", null);
         builder.show();
     }
 
-    // ================== UPDATE API ==================
-    private void updateSchedule(Schedule schedule) {
-        apiService.updateSchedule(schedule.getId(), schedule).enqueue(new Callback<Schedule>() {
-            @Override
-            public void onResponse(Call<Schedule> call, Response<Schedule> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(ScheduleActivity.this, "Schedule diperbarui (API)", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(ScheduleActivity.this, "Gagal update API: " + response.code(), Toast.LENGTH_SHORT).show();
-                }
-            }
+    private void updateSchedule(int id, String title, String date, String time) {
+        api.updateSchedule(id, new Schedule(id, title, date, time))
+                .enqueue(new Callback<Schedule>() {
+                    @Override
+                    public void onResponse(Call<Schedule> call, Response<Schedule> response) {
+                        if (response.body() == null) return;
+                        Schedule s = response.body();
+                        new Thread(() -> {
+                            dao.update(new ScheduleEntity(
+                                    s.getId(),
+                                    s.getTitle(),
+                                    s.getDate(),
+                                    s.getTime()
+                            ));
+                            runOnUiThread(() -> loadFromRoom());
+                        }).start();
+                    }
 
-            @Override
-            public void onFailure(Call<Schedule> call, Throwable t) {
-                Toast.makeText(ScheduleActivity.this, "API error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onFailure(Call<Schedule> call, Throwable t) {
+                        t.printStackTrace();
+                    }
+                });
     }
 
-    // ================== DELETE API ==================
     private void deleteSchedule(int id) {
-        apiService.deleteSchedule(id).enqueue(new Callback<Void>() {
+        api.deleteSchedule(id).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    Toast.makeText(ScheduleActivity.this, "Schedule dihapus (API)", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(ScheduleActivity.this, "Gagal delete API: " + response.code(), Toast.LENGTH_SHORT).show();
+                    new Thread(() -> {
+                        dao.deleteById(id);
+                        runOnUiThread(() -> loadFromRoom());
+                    }).start();
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(ScheduleActivity.this, "API error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    // ================== LOAD API ==================
-    private void loadSchedules() {
-        apiService.getSchedules().enqueue(new Callback<List<Schedule>>() {
-            @Override
-            public void onResponse(Call<List<Schedule>> call, Response<List<Schedule>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    scheduleList.clear();
-                    scheduleList.addAll(response.body());
-                    adapter.notifyDataSetChanged();
-                } else {
-                    // fallback ke Room
-                    loadFromLocal();
-                    Toast.makeText(ScheduleActivity.this, "Load dari lokal DB", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Schedule>> call, Throwable t) {
-                // fallback ke Room
-                loadFromLocal();
-                Toast.makeText(ScheduleActivity.this, "Load dari lokal DB", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
             }
         });
     }
