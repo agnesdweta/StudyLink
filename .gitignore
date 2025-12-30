@@ -1,1 +1,9 @@
 backend-api/node_modules/ 
+# Android Studio / Gradle
+*.iml
+/.idea/
+/android/.idea/
+/android/.gradle/
+/android/build/
+/android/local.properties
+/local.properties
