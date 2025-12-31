@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.studylink">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
@@ -14,8 +13,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
-
-        <activity android:name=".UploadAssignmentActivity" android:exported="false" />
         <activity
             android:name=".AssignmentActivity"
             android:exported="false" />

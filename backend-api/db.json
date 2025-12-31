@@ -1,1 +1,19 @@
-{"users":[{"id":1,"username":"admin","password":"$2b$10$V5DO7w9qYAupjFDEp6UMqOjh4zR.0Xcna6/cc6U05VRnafmQZvboe"},{"username":"asd","password":"$2b$10$5HBLBanyLKXVuoUO17mEx.AF6fPvtu1MsNuuTUjxid.NhGqGw3mgi"}]}
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "$2b$10$V5DO7w9qYAupjFDEp6UMqOjh4zR.0Xcna6/cc6U05VRnafmQZvboe"
+    },
+    {
+      "id": 1767110217664,
+      "username": "Agnes",
+      "password": "$2b$10$bpjnK2EiJRRLHEjLkhm71.lzgG1tYfjvJ/XkJu/tR8IaR0vfR2SVG"
+    },
+    {
+      "id": 1767113500990,
+      "username": "Anis",
+      "password": "$2b$10$ngvXcUeRNXDj6n2Rg/KIBug7mw7JkrQYx50QUetHElAe50DzgLt8a"
+    }
+  ]
+}
