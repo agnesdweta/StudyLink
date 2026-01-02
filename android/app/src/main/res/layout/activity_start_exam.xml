@@ -1,73 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/start_exam"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#FFFFFF">
+    android:padding="16dp">
 
-    <!-- Judul Exam -->
-    <TextView
-        android:id="@+id/txtExamTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Soal Ujian"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_gravity="center_horizontal"
-        android:paddingBottom="16dp"/>
-
-    <!-- TextView Soal -->
-    <TextView
-        android:id="@+id/txtSoal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Loading soal..."
-        android:textSize="18sp"
-        android:padding="12dp"
-        android:background="#F0F0F0"
-        android:layout_marginBottom="24dp"/>
-
-    <!-- EditText Jawaban -->
-    <EditText
-        android:id="@+id/etAnswer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Tulis jawaban di sini"
-        android:padding="12dp"
-        android:background="#EFEFEF"
-        android:layout_marginBottom="16dp"/>
-
-    <!-- Tombol Navigasi Soal -->
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
+        android:layout_height="match_parent">
 
         <Button
-            android:id="@+id/Prev"
+            android:id="@+id/btnBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sebelumnya"
-            android:layout_marginEnd="16dp"/>
+            android:text="Back"/>
 
         <Button
-            android:id="@+id/Next"
+            android:id="@+id/btnAddQuestion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Berikutnya"/>
+            android:text="Tambah Soal"
+            android:layout_marginTop="8dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvQuestion"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="8dp"/>
     </LinearLayout>
 
-    <!-- Tombol Submit -->
-    <Button
-        android:id="@+id/Submit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Submit Jawaban"
-        android:layout_marginTop="24dp"
-        android:backgroundTint="#3F51B5"
-        android:textColor="#FFFFFF"/>
-
-</LinearLayout>
+</FrameLayout>

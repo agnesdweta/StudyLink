@@ -1,34 +1,78 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="12dp"
-    android:background="?attr/selectableItemBackground">
+    android:background="@drawable/white_bg"
+    android:elevation="2dp"
+    android:layout_marginBottom="8dp">
 
+    <!-- Judul Exam -->
     <TextView
-        android:id="@+id/tvExamTitle"
+        android:id="@+id/txtExamTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Judul Ujian"
+        android:text="Ujian Matematika"
         android:textSize="16sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:textColor="@android:color/black"/>
 
+    <!-- Mata Kuliah / Course -->
     <TextView
-        android:id="@+id/tvExamCourse"
+        android:id="@+id/txtCourse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Mata Pelajaran"
+        android:text="Matematika Dasar"
         android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
         android:layout_marginTop="2dp"/>
 
+    <!-- Tanggal Exam -->
     <TextView
-        android:id="@+id/tvExamDate"
+        android:id="@+id/txtDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tanggal"
+        android:text="Senin, 01 Jan 2026"
         android:textSize="14sp"
-        android:layout_marginTop="2dp"
-        android:textColor="#555555"/>
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginTop="2dp"/>
+    <TextView
+        android:id="@+id/txtTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="12:00"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginTop="2dp"/>
+
+    <!-- Tombol Aksi: Edit / Delete / Mulai -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_marginTop="6dp"
+        android:weightSum="3">
+
+        <Button
+            android:id="@+id/btnEditExam"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit"/>
+
+        <Button
+            android:id="@+id/btnDeleteExam"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hapus"
+            android:layout_marginStart="4dp"/>
+
+        <Button
+            android:id="@+id/btnStartExam"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mulai"
+            android:layout_marginStart="4dp"/>
+    </LinearLayout>
+
 </LinearLayout>

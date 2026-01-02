@@ -12,12 +12,14 @@ import java.util.List;
 
 @Dao
 public interface CourseDao {
+
     @Query("SELECT * FROM courses ORDER BY id DESC")
     LiveData<List<CourseEntity>> getAllCoursesLive();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(CourseEntity course);
 
+    // Optional (boleh dipakai kalau update manual)
     @Update
     void update(CourseEntity course);
 
@@ -28,8 +30,8 @@ public interface CourseDao {
     void deleteAll();
 
     @Query("SELECT * FROM courses WHERE id = :id LIMIT 1")
-    CourseEntity getById(int id);
+    CourseEntity getById(long id); // ⬅️ HARUS long
 
     @Query("DELETE FROM courses WHERE id = :id")
-    void deleteById(int id);
+    void deleteById(long id); // ⬅️ HARUS long
 }

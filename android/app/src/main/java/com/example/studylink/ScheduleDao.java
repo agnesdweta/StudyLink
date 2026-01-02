@@ -22,9 +22,12 @@ public interface ScheduleDao {
     void update(ScheduleEntity schedule);
 
     @Query("DELETE FROM schedules WHERE id = :id")
-    void deleteById(int id);
+    void deleteById(long id);
 
     @Query("DELETE FROM schedules")
     void deleteAll();
+
+    @Query("SELECT * FROM schedules WHERE id = :id LIMIT 1")
+    ScheduleEntity getById(long id);
 }
 

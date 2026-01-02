@@ -8,8 +8,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHolder> {
 
@@ -38,7 +41,15 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         Schedule s = list.get(position);
 
         holder.tvTitle.setText(s.getTitle());
-        holder.tvDate.setText(s.getDate());
+        try {
+            SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            Date parsedDate = originalFormat.parse(s.getDate());
+            SimpleDateFormat displayFormat = new SimpleDateFormat("EEEE, dd MMM yyyy", new Locale("id", "ID"));
+            holder.tvDate.setText(displayFormat.format(parsedDate));
+        } catch (Exception e) {
+            holder.tvDate.setText(s.getDate()); // fallback
+        }
+
         holder.tvTime.setText(s.getTime());
 
         holder.itemView.setOnClickListener(v -> {

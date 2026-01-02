@@ -1,87 +1,108 @@
 package com.example.studylink;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.studylink.api.ApiService;
-import com.example.studylink.model.Post;
-
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.ViewHolder> {
 
-    private List<Post> postList;
-    private ApiService apiService;
+    public interface ForumClickListener {
+        // ===== ForumClickListener =====
+        void onDelete(ForumEntity forum, int position);
 
-    // 🔥 constructor baru
-    public ForumAdapter(List<Post> postList, ApiService apiService) {
-        this.postList = postList;
-        this.apiService = apiService;
+        void onUpdate(ForumEntity forum, int position, String newText);
+    }
+
+    private List<ForumEntity> forums;
+    private ForumClickListener listener;
+
+    public ForumAdapter(List<ForumEntity> forums, ForumClickListener listener) {
+        this.forums = forums;
+        this.listener = listener;
+    }
+
+    public void setForums(List<ForumEntity> newForums) {
+        forums.clear();
+        forums.addAll(newForums);
+        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_post, parent, false);
+                .inflate(R.layout.item_forum, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Post post = postList.get(position);
+        ForumEntity forum = forums.get(position);
+        holder.tvUser.setText(forum.getUser());
+        holder.etContent.setText(forum.getContent());
+        holder.tvCreatedAt.setText(forum.getCreatedAt());
 
-        holder.tvTitle.setText(post.getTitle());
-        holder.tvContent.setText(post.getContent());
+        holder.etContent.setEnabled(false);
+        holder.btnEdit.setText("Edit");
 
-        // 🔥 LOGIC HAPUS DI SINI
+        holder.btnEdit.setOnClickListener(v -> {
+            if(!holder.etContent.isEnabled()){
+                holder.etContent.setEnabled(true);
+                holder.etContent.requestFocus();
+                holder.btnEdit.setText("Simpan");
+
+                InputMethodManager imm = (InputMethodManager) holder.itemView.getContext()
+                        .getSystemService(Context.INPUT_METHOD_SERVICE);
+                if(imm != null) imm.showSoftInput(holder.etContent, InputMethodManager.SHOW_IMPLICIT);
+            } else {
+                String newText = holder.etContent.getText().toString().trim();
+                if(newText.isEmpty()){
+                    Toast.makeText(holder.itemView.getContext(), "Komentar kosong!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                holder.etContent.setEnabled(false);
+                holder.btnEdit.setText("Edit");
+
+                if(listener != null){
+                    listener.onUpdate(forum, position, newText);
+                }
+            }
+        });
+
         holder.btnDelete.setOnClickListener(v -> {
-            apiService.deletePost(post.getId()).enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    if (response.isSuccessful()) {
-                        int pos = holder.getAdapterPosition();
-                        postList.remove(pos);
-                        notifyItemRemoved(pos);
-
-                        Toast.makeText(v.getContext(),
-                                "Komentar dihapus", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                    Toast.makeText(v.getContext(),
-                            "Gagal menghapus", Toast.LENGTH_SHORT).show();
-                }
-            });
+            if(listener != null){
+                listener.onDelete(forum, position);
+            }
         });
     }
 
     @Override
     public int getItemCount() {
-        return postList.size();
+        return forums.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvContent;
-        Button btnDelete;
+        TextView tvUser, tvCreatedAt;
+        EditText etContent;
+        Button btnEdit, btnDelete;
 
-        ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvTitle = itemView.findViewById(R.id.tvTitle);
-            tvContent = itemView.findViewById(R.id.tvContent);
+            tvUser = itemView.findViewById(R.id.tvUser);
+            tvCreatedAt = itemView.findViewById(R.id.tvCreatedAt);
+            etContent = itemView.findViewById(R.id.etContent);
+            btnEdit = itemView.findViewById(R.id.btnEdit);
             btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }

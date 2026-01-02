@@ -14,48 +14,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Card Topik -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardTopic"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="3dp"
-        app:layout_constraintTop_toBottomOf="@id/toolbarInclude"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="12dp">
-
-            <TextView
-                android:id="@+id/tvTopic"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Diskusi Matematika"
-                android:textSize="16sp"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/tvDesc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Bahas soal integral dan turunan"
-                android:layout_marginTop="4dp"/>
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
     <!-- LIST KOMENTAR -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvForum"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@id/cardTopic"
+        android:descendantFocusability="beforeDescendants"
+        app:layout_constraintTop_toBottomOf="@id/toolbarInclude"
         app:layout_constraintBottom_toTopOf="@id/commentInputLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
@@ -79,7 +45,7 @@
             android:layout_weight="1"
             android:minHeight="48dp"
             android:padding="12dp"
-            android:hint="@string/tulis_komentar" />
+            android:hint="@string/tulis_komentar"/>
 
         <Button
             android:id="@+id/btnSend"

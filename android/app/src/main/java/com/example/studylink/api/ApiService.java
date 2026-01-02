@@ -2,8 +2,8 @@ package com.example.studylink.api;
 
 import com.example.studylink.Assignment;
 import com.example.studylink.Course;
-import com.example.studylink.Exam;
-import com.example.studylink.Question;
+import com.example.studylink.ExamEntity;
+import com.example.studylink.ForumEntity;
 import com.example.studylink.Schedule;
 import com.example.studylink.model.*;
 
@@ -31,19 +31,6 @@ public interface ApiService {
 
     @POST("login")
     Call<LoginResponse> login(@Body LoginRequest request);
-
-    // ================= FORUM =================
-    @GET("posts")
-    Call<List<Post>> getPosts();
-
-    @POST("posts")
-    Call<Post> createPost(@Body Post post);
-
-    @PUT("posts/{id}")
-    Call<Post> updatePost(@Path("id") int id, @Body Post post);
-
-    @DELETE("posts/{id}")
-    Call<Void> deletePost(@Path("id") int id);
 
     // ================= ASSIGNMENT =================
     @GET("assignments")
@@ -77,50 +64,49 @@ public interface ApiService {
 
     @PUT("schedules/{id}")
     Call<Schedule> updateSchedule(
-            @Path("id") int id,
+            @Path("id") long id,
             @Body Schedule schedule
     );
 
     @DELETE("schedules/{id}")
-    Call<Void> deleteSchedule(@Path("id") int id);
+    Call<Void> deleteSchedule(@Path("id") long id);
 
     // ================= EXAM =================
-    @GET("exams")
-    Call<List<Exam>> getExams();
 
-    @GET("exams/{id}/questions")
-    Call<List<Question>> getExamQuestions(@Path("id") int examId);
+    // GET all exams
+    @GET("/exams")
+    Call<List<ExamEntity>> getExams();
 
-    @POST("exams")
-    Call<Exam> addExam(@Body Exam exam);
+    // CREATE exam
+    @POST("/exams")
+    Call<ExamEntity> createExam(@Body ExamEntity exam);
 
-    @PUT("exams/{id}")
-    Call<Exam> updateExam(@Path("id") int id, @Body Exam exam);
+    // UPDATE exam
+    @PUT("/exams/{id}")
+    Call<ExamEntity> updateExam(@Path("id") long id, @Body ExamEntity exam);
 
-    @DELETE("exams/{id}")
-    Call<Void> deleteExam(@Path("id") int id);
+    // DELETE exam
+    @DELETE("/exams/{id}")
+    Call<Void> deleteExam(@Path("id") long id);
 
     // ================= COURSE =================
     @GET("courses")
-    Call<List<Course>> getCourses(@Header("Authorization") String token);
+    Call<List<Course>> getCourses();
 
     @POST("courses")
     Call<Course> addCourse(
-            @Header("Authorization") String token,
             @Body Course course
     );
 
     @PUT("courses/{id}")
     Call<Course> updateCourse(
-            @Header("Authorization") String token,
-            @Path("id") int id,
+            @Path("id") long id,
             @Body Course course
     );
 
     @DELETE("courses/{id}")
     Call<Void> deleteCourse(
-            @Header("Authorization") String token,
-            @Path("id") int id
+            @Path("id") long id
     );
 
     @Multipart
@@ -129,4 +115,20 @@ public interface ApiService {
             @Part("assignmentId") RequestBody assignmentId,
             @Part MultipartBody.Part file
     );
+
+    // ================= FORUM =================
+    @GET("forum")
+    Call<List<ForumEntity>> getForums();
+
+    @POST("forum")
+    Call<ForumEntity> createForumPost(@Body ForumEntity forum);
+
+    @PUT("forum/{id}")
+    Call<ForumEntity> updateForumPost(
+            @Path("id") long id,
+            @Body ForumEntity forum
+    );
+    @DELETE("forum/{id}")
+    Call<Void> deleteForumPost(@Path("id") long id);
 }
+

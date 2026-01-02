@@ -14,6 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
         <activity
+            android:name=".StartExamActivity"
+            android:exported="false" />
+        <activity
             android:name=".AssignmentActivity"
             android:exported="false" />
         <activity
@@ -30,7 +33,7 @@
             android:exported="false" />
         <activity
             android:name=".ForumActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".ExamActivity"
             android:exported="false" />

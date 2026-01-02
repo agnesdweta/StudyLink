@@ -2,7 +2,6 @@ package com.example.studylink;
 
 import android.os.Bundle;
 import android.app.AlertDialog;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,21 +35,29 @@ public class CourseActivity extends AppCompatActivity {
 
         dao = AppDatabase.getInstance(this).courseDao();
         api = RetrofitClient.getService();
-        View toolbar = findViewById(R.id.toolbarInclude);
+
         ImageView btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> finish());
 
-
         RecyclerView rv = findViewById(R.id.rvCourses);
         rv.setLayoutManager(new LinearLayoutManager(this));
+
         adapter = new CourseAdapter(new CourseAdapter.OnItemClickListener() {
             @Override
-            public void onEditClick(CourseEntity course) { showEditDialog(course); }
+            public void onEditClick(CourseEntity course) {
+                showEditDialog(course);
+            }
+
             @Override
-            public void onDeleteClick(CourseEntity course) { deleteCourse(course.getId()); }
+            public void onDeleteClick(CourseEntity course) {
+                deleteCourse(course.getId());
+            }
+
             @Override
-            public void onMessageClick(CourseEntity course) { /* Opsional */ }
+            public void onMessageClick(CourseEntity course) {
+            }
         });
+
         rv.setAdapter(adapter);
 
         findViewById(R.id.btnAddCourse).setOnClickListener(v -> showAddDialog());
@@ -59,130 +66,210 @@ public class CourseActivity extends AppCompatActivity {
         syncFromApi();
     }
 
+    // ================= ROOM OBSERVER =================
     private void observeRoom() {
-        dao.getAllCoursesLive().observe(this, courses -> {
-            adapter.submitList(new ArrayList<>(courses));
-        });
+        dao.getAllCoursesLive().observe(this, courses ->
+                adapter.submitList(new ArrayList<>(courses))
+        );
     }
 
+    // ================= SYNC API → ROOM =================
     private void syncFromApi() {
-        api.getCourses("Bearer " + MyToken.get(this))
+        api.getCourses()
                 .enqueue(new Callback<List<Course>>() {
                     @Override
                     public void onResponse(Call<List<Course>> call, Response<List<Course>> response) {
-                        if(response.isSuccessful() && response.body() != null){
+                        if (response.isSuccessful() && response.body() != null) {
                             new Thread(() -> {
-                                for(Course c : response.body()){
-                                    dao.insert(new CourseEntity(c.getId(), c.getName(), c.getDescription(), c.getTime(), c.getInstructor()));
+                                dao.deleteAll(); // ⬅️ cegah duplikat
+                                for (Course c : response.body()) {
+                                    dao.insert(new CourseEntity(
+                                            c.getId(),
+                                            c.getName(),
+                                            c.getDescription(),
+                                            c.getTime(),
+                                            c.getInstructor()
+                                    ));
                                 }
                             }).start();
                         }
                     }
+
                     @Override
                     public void onFailure(Call<List<Course>> call, Throwable t) {
-                        Toast.makeText(CourseActivity.this, "Gagal sinkron API", Toast.LENGTH_SHORT).show();
+                        t.printStackTrace();
+                        runOnUiThread(() ->
+                                Toast.makeText(
+                                        CourseActivity.this,
+                                        "Gagal sync course",
+                                        Toast.LENGTH_SHORT
+                                ).show()
+                        );
                     }
                 });
     }
 
+
+    // ================= ADD COURSE =================
     private void showAddDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Tambah Course");
+        AlertDialog.Builder b = new AlertDialog.Builder(this);
+        b.setTitle("Tambah Course");
 
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(32,16,32,16);
+        LinearLayout l = new LinearLayout(this);
+        l.setOrientation(LinearLayout.VERTICAL);
+        l.setPadding(32, 16, 32, 16);
 
-        EditText etName = new EditText(this); etName.setHint("Nama Course"); layout.addView(etName);
-        EditText etDesc = new EditText(this); etDesc.setHint("Deskripsi"); layout.addView(etDesc);
-        EditText etTime = new EditText(this); etTime.setHint("Waktu"); layout.addView(etTime);
-        EditText etInstructor = new EditText(this); etInstructor.setHint("Instruktur"); layout.addView(etInstructor);
+        EditText etName = new EditText(this);
+        etName.setHint("Nama");
+        EditText etDesc = new EditText(this);
+        etDesc.setHint("Deskripsi");
+        EditText etTime = new EditText(this);
+        etTime.setHint("Waktu");
+        EditText etInst = new EditText(this);
+        etInst.setHint("Instruktur");
 
-        builder.setView(layout);
-        builder.setPositiveButton("Simpan", (d,w) -> {
-            String name = etName.getText().toString().trim();
-            String desc = etDesc.getText().toString().trim();
-            String time = etTime.getText().toString().trim();
-            String instructor = etInstructor.getText().toString().trim();
+        l.addView(etName);
+        l.addView(etDesc);
+        l.addView(etTime);
+        l.addView(etInst);
 
-            if(name.isEmpty() || desc.isEmpty() || time.isEmpty() || instructor.isEmpty()){
-                Toast.makeText(this, "Data tidak boleh kosong", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            addCourse(name, desc, time, instructor);
+        b.setView(l);
+        b.setPositiveButton("Simpan", (d, w) -> {
+            addCourse(
+                    etName.getText().toString().trim(),
+                    etDesc.getText().toString().trim(),
+                    etTime.getText().toString().trim(),
+                    etInst.getText().toString().trim()
+            );
         });
-        builder.setNegativeButton("Batal", null);
-        builder.show();
+        b.setNegativeButton("Batal", null);
+        b.show();
     }
 
-    private void addCourse(String name, String desc, String time, String instructor){
-        Course course = new Course(0, name, desc, time, instructor);
-        api.addCourse("Bearer " + MyToken.get(this), course)
+    private void addCourse(String name, String desc, String time, String inst) {
+        if (name.isEmpty() || desc.isEmpty() || time.isEmpty() || inst.isEmpty()) {
+            Toast.makeText(this, "Data tidak boleh kosong", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Course course = new Course(0, name, desc, time, inst);
+
+        // ⬇️ TANPA Bearer Token
+        api.addCourse(course)
                 .enqueue(new Callback<Course>() {
                     @Override
                     public void onResponse(Call<Course> call, Response<Course> response) {
-                        if(response.isSuccessful() && response.body() != null){
+                        if (response.isSuccessful() && response.body() != null) {
                             Course c = response.body();
-                            new Thread(() -> dao.insert(new CourseEntity(c.getId(), c.getName(), c.getDescription(), c.getTime(), c.getInstructor()))).start();
+
+                            new Thread(() -> {
+                                dao.insert(new CourseEntity(
+                                        c.getId(),
+                                        c.getName(),
+                                        c.getDescription(),
+                                        c.getTime(),
+                                        c.getInstructor()
+                                ));
+                            }).start();
+                        } else {
+                            Toast.makeText(
+                                    CourseActivity.this,
+                                    "Gagal menambah course",
+                                    Toast.LENGTH_SHORT
+                            ).show();
                         }
                     }
+
                     @Override
-                    public void onFailure(Call<Course> call, Throwable t) { t.printStackTrace(); }
+                    public void onFailure(Call<Course> call, Throwable t) {
+                        t.printStackTrace();
+                        Toast.makeText(
+                                CourseActivity.this,
+                                "Koneksi ke server gagal",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
                 });
     }
 
-    private void showEditDialog(CourseEntity c){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Edit Course");
+    // ================= EDIT COURSE =================
+    private void showEditDialog(CourseEntity c) {
+        AlertDialog.Builder b = new AlertDialog.Builder(this);
+        b.setTitle("Edit Course");
 
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(32,16,32,16);
+        LinearLayout l = new LinearLayout(this);
+        l.setOrientation(LinearLayout.VERTICAL);
+        l.setPadding(32, 16, 32, 16);
 
-        EditText etName = new EditText(this); etName.setText(c.getName()); layout.addView(etName);
-        EditText etDesc = new EditText(this); etDesc.setText(c.getDescription()); layout.addView(etDesc);
-        EditText etTime = new EditText(this); etTime.setText(c.getTime()); layout.addView(etTime);
-        EditText etInstructor = new EditText(this); etInstructor.setText(c.getInstructor()); layout.addView(etInstructor);
+        EditText etName = new EditText(this);
+        etName.setText(c.getName());
+        EditText etDesc = new EditText(this);
+        etDesc.setText(c.getDescription());
+        EditText etTime = new EditText(this);
+        etTime.setText(c.getTime());
+        EditText etInst = new EditText(this);
+        etInst.setText(c.getInstructor());
 
-        builder.setView(layout);
-        builder.setPositiveButton("Update", (d,w) -> {
-            String name = etName.getText().toString().trim();
-            String desc = etDesc.getText().toString().trim();
-            String time = etTime.getText().toString().trim();
-            String instructor = etInstructor.getText().toString().trim();
+        l.addView(etName);
+        l.addView(etDesc);
+        l.addView(etTime);
+        l.addView(etInst);
 
-            if(name.isEmpty() || desc.isEmpty() || time.isEmpty() || instructor.isEmpty()){
-                Toast.makeText(this, "Data tidak boleh kosong", Toast.LENGTH_SHORT).show();
-                return;
+        b.setView(l);
+        b.setPositiveButton("Update", (d, w) ->
+                updateCourse(
+                        c.getId(),
+                        etName.getText().toString().trim(),
+                        etDesc.getText().toString().trim(),
+                        etTime.getText().toString().trim(),
+                        etInst.getText().toString().trim()
+                )
+        );
+        b.setNegativeButton("Batal", null);
+        b.show();
+    }
+
+    private void updateCourse(long id, String name, String desc, String time, String inst) {
+        Course course = new Course(id, name, desc, time, inst);
+
+        api.updateCourse(id, course).enqueue(new Callback<Course>() {
+            @Override
+            public void onResponse(Call<Course> call, Response<Course> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Course c = response.body();
+                    new Thread(() ->
+                            dao.update(new CourseEntity(
+                                    c.getId(),
+                                    c.getName(),
+                                    c.getDescription(),
+                                    c.getTime(),
+                                    c.getInstructor()
+                            ))
+                    ).start();
+                }
             }
-            updateCourse(c.getId(), name, desc, time, instructor);
+
+            @Override
+            public void onFailure(Call<Course> call, Throwable t) {
+                t.printStackTrace();
+            }
         });
-        builder.setNegativeButton("Batal", null);
-        builder.show();
     }
 
-    private void updateCourse(int id, String name, String desc, String time, String instructor){
-        Course course = new Course(id, name, desc, time, instructor);
-        api.updateCourse("Bearer " + MyToken.get(this), id, course)
-                .enqueue(new Callback<Course>() {
-                    @Override
-                    public void onResponse(Call<Course> call, Response<Course> response) {
-                        if(response.isSuccessful() && response.body() != null){
-                            Course c = response.body();
-                            new Thread(() -> dao.update(new CourseEntity(c.getId(), c.getName(), c.getDescription(), c.getTime(), c.getInstructor()))).start();
-                        }
-                    }
-                    @Override
-                    public void onFailure(Call<Course> call, Throwable t) { t.printStackTrace(); }
-                });
-    }
 
-    private void deleteCourse(int id){
-        new Thread(() -> dao.deleteById(id)).start();
-        api.deleteCourse("Bearer " + MyToken.get(this), id)
-                .enqueue(new Callback<Void>() {
-                    @Override public void onResponse(Call<Void> call, Response<Void> response) {}
-                    @Override public void onFailure(Call<Void> call, Throwable t) { t.printStackTrace(); }
-                });
+    // ================= DELETE COURSE =================
+    private void deleteCourse(long id) {
+        new Thread(() -> dao.deleteById(id)).start(); // hapus dulu
+
+        api.deleteCourse(id).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 }

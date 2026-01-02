@@ -1,50 +1,84 @@
 package com.example.studylink;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.widget.Button;
+import android.widget.EditText;
+
 import androidx.appcompat.app.AppCompatActivity;
-import com.example.studylink.api.ApiService;
-import com.example.studylink.api.RetrofitClient;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class StartExamActivity extends AppCompatActivity {
 
-    private TextView txtSoal;
-    private ApiService api;
+    private RecyclerView rvQuestion;
+    private Button btnBack, btnAddQuestion;
+    private List<Question> questionList;
+    private QuestionAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_exam);
 
-        txtSoal = findViewById(R.id.txtSoal);
+        rvQuestion = findViewById(R.id.rvQuestion);
+        btnBack = findViewById(R.id.btnBack);
+        btnAddQuestion = findViewById(R.id.btnAddQuestion);
 
-        api = RetrofitClient.getService();
+        // RecyclerView setup
+        rvQuestion.setLayoutManager(new LinearLayoutManager(this));
+        questionList = new ArrayList<>();
+        adapter = new QuestionAdapter(questionList);
+        rvQuestion.setAdapter(adapter);
 
-        int examId = getIntent().getIntExtra("exam_id", -1);
+        // klik soal untuk edit
+        adapter.setOnQuestionClickListener(position -> editQuestionDialog(position));
 
-        if (examId != -1) {
-            loadExamQuestions(examId);
-        }
+        // tombol kembali
+        btnBack.setOnClickListener(v -> finish());
+
+        // tombol tambah soal
+        btnAddQuestion.setOnClickListener(v -> addQuestionDialog());
     }
 
-    private void loadExamQuestions(int examId) {
-        api.getExamQuestions(examId).enqueue(new Callback<List<Question>>() {
-            @Override
-            public void onResponse(Call<List<Question>> call, Response<List<Question>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    txtSoal.setText(response.body().get(0).getQuestion()); // contoh ambil soal pertama
-                }
-            }
-            @Override
-            public void onFailure(Call<List<Question>> call, Throwable t) {
-                txtSoal.setText("Gagal load soal");
-            }
-        });
+    private void addQuestionDialog() {
+        EditText etQuestion = new EditText(this);
+        etQuestion.setHint("Tulis soal di sini");
+
+        new AlertDialog.Builder(this)
+                .setTitle("Tambah Soal")
+                .setView(etQuestion)
+                .setPositiveButton("Simpan", (d, w) -> {
+                    String text = etQuestion.getText().toString().trim();
+                    if (!text.isEmpty()) {
+                        Question q = new Question(text);
+                        questionList.add(q);        // simpan ke list
+                        adapter.notifyItemInserted(questionList.size() - 1);
+                    }
+                })
+                .setNegativeButton("Batal", null)
+                .show();
+    }
+
+    private void editQuestionDialog(int position) {
+        Question q = questionList.get(position);
+        EditText etQuestion = new EditText(this);
+        etQuestion.setText(q.getText());
+
+        new AlertDialog.Builder(this)
+                .setTitle("Edit Soal")
+                .setView(etQuestion)
+                .setPositiveButton("Simpan", (d, w) -> {
+                    String text = etQuestion.getText().toString().trim();
+                    if (!text.isEmpty()) {
+                        q.setText(text);
+                        adapter.notifyItemChanged(position);
+                    }
+                })
+                .setNegativeButton("Batal", null)
+                .show();
     }
 }

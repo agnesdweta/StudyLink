@@ -7,7 +7,7 @@ public class Post {
     private String content;
 
     // constructor kosong (wajib untuk Retrofit)
-    public Post() {}
+    public Post(String content) {}
 
     // getter & setter
     public int getId() {
