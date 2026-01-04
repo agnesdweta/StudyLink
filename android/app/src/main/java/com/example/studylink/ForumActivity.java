@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.studylink.api.ApiService;
 import com.example.studylink.api.RetrofitClient;
 import com.example.studylink.db.AppDatabase;
+import com.example.studylink.util.TokenManager;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,12 +37,17 @@ public class ForumActivity extends AppCompatActivity implements ForumAdapter.For
     private AppDatabase db;
     private ForumAdapter adapter;
     private ApiService api;
+    private String currentUser;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forum);
+        currentUser = getIntent().getStringExtra("username");
+        if (currentUser == null) {
+            currentUser = "Guest"; // default kalau kosong
+        }
 
         rvForum = findViewById(R.id.rvForum);
         edtComment = findViewById(R.id.edtComment);
@@ -115,7 +121,9 @@ public class ForumActivity extends AppCompatActivity implements ForumAdapter.For
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         String createdAt = sdf.format(new Date());
 
-        ForumEntity forum = new ForumEntity(id, text, "Agnes", createdAt);
+        TokenManager tokenManager = new TokenManager(this);
+        String currentUser = tokenManager.getUsername();
+        ForumEntity forum = new ForumEntity(id, text, currentUser, createdAt);
         // Insert ke API dulu
         api.createForumPost(forum).enqueue(new Callback<ForumEntity>() {
             @Override

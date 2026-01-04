@@ -11,6 +11,7 @@ public class TokenManager {
     private static final String FILE_NAME = "secure_prefs";
     private static final String KEY_TOKEN = "jwt_token";
     private static final String KEY_USERNAME = "username";
+    private static final String KEY_USER_ID = "user_id";
 
     private SharedPreferences prefs;
 
@@ -29,14 +30,16 @@ public class TokenManager {
         }
     }
 
-    public void save(String token, String username) {
+    public void save(String token, String username, long userId) {
         prefs.edit()
                 .putString(KEY_TOKEN, token)
                 .putString(KEY_USERNAME, username)
+                .putLong(KEY_USER_ID, userId)
                 .apply();
     }
 
     public String getToken() { return prefs.getString(KEY_TOKEN, null); }
     public String getUsername() { return prefs.getString(KEY_USERNAME, null); }
+    public long getUserId() { return prefs.getLong(KEY_USER_ID, -1); }
     public void clear() { prefs.edit().clear().apply(); }
 }

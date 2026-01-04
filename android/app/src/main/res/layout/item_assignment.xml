@@ -13,6 +13,14 @@
         android:orientation="vertical"
         android:padding="12dp">
 
+        <!-- FOTO TUGAS -->
+        <ImageView
+            android:id="@+id/imgAssignmentPhoto"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerCrop"
+            android:src="@android:drawable/ic_menu_report_image"/>
+
         <!-- BAGIAN TEKS -->
         <TextView
             android:id="@+id/txtAssignmentTitle"

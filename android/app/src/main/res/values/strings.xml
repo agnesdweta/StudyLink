@@ -122,4 +122,5 @@
     <string name="waktu">Waktu</string>
     <string name="daftar_mata_kuliah">Daftar Mata Kuliah</string>
     <string name="tambah_course">Tambah Course</string>
+    <string name="edit_foto_profil">Edit Foto Profil</string>
 </resources>

@@ -1,7 +1,6 @@
 package com.example.studylink;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -68,7 +67,7 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
         menuCalendarLayout.setOnClickListener(v ->
-                startActivity(new Intent(this, CalenderActivity.class))
+                startActivity(new Intent(this, CalendarActivity.class))
         );
         menuExamLayout.setOnClickListener(v ->
                 startActivity(new Intent(this, ExamActivity.class))

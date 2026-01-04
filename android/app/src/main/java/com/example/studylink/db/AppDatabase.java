@@ -8,6 +8,8 @@ import androidx.room.RoomDatabase;
 
 import com.example.studylink.AssignmentDao;
 import com.example.studylink.AssignmentEntity;
+import com.example.studylink.CalendarDao;
+import com.example.studylink.CalendarEntity;
 import com.example.studylink.ExamDao;
 import com.example.studylink.ExamEntity;
 import com.example.studylink.ForumDao;
@@ -16,6 +18,8 @@ import com.example.studylink.ScheduleDao;
 import com.example.studylink.ScheduleEntity;
 import com.example.studylink.CourseDao;
 import com.example.studylink.CourseEntity;
+import com.example.studylink.UserDao;
+import com.example.studylink.UserEntity;
 
 @Database(
         entities = {
@@ -23,9 +27,11 @@ import com.example.studylink.CourseEntity;
                 ScheduleEntity.class,
                 CourseEntity.class,
                 ExamEntity.class,
-                ForumEntity.class
+                ForumEntity.class,
+                CalendarEntity.class,
+                UserEntity.class
         },
-        version = 12,           // ⬅️ NAIKKAN VERSION (WAJIB)
+        version = 18,           // ⬅️ NAIKKAN VERSION (WAJIB)
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
@@ -36,10 +42,15 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract ScheduleDao scheduleDao();
 
+    public abstract ExamDao examDao();
+
+    public abstract ForumDao forumDao();
+
     public abstract CourseDao courseDao();
 
-    public abstract ExamDao examDao();
-    public abstract ForumDao forumDao();
+    public abstract CalendarDao calendarDao();
+
+    public abstract UserDao userDao();
 
     public static AppDatabase getInstance(Context context) {
         if (instance == null) {

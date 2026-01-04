@@ -3,6 +3,7 @@
     package="com.example.studylink">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -38,7 +39,7 @@
             android:name=".ExamActivity"
             android:exported="false" />
         <activity
-            android:name=".CalenderActivity"
+            android:name=".CalendarActivity"
             android:exported="false" />
         <activity
             android:name=".ProfileActivity"

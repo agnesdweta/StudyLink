@@ -4,6 +4,7 @@ public class RegisterResponse {
     private String message;
     private String username;
     private String token;
+    private long id;
 
     public String getMessage() {
         return message;
@@ -16,4 +17,5 @@ public class RegisterResponse {
     public String getToken() {
         return token;
     }
+    public long getUserId() { return id; }
 }

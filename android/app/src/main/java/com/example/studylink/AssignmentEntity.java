@@ -6,27 +6,29 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "assignments")
 public class AssignmentEntity {
 
-    @PrimaryKey
-    public int id;
+    @PrimaryKey(autoGenerate = false)
+    public long id;
 
     public String title;
     public String course;
     public String deadline;
+    public String image;
 
     // 🔹 Constructor dengan parameter (opsional, tapi enak dipakai)
-    public AssignmentEntity(int id, String title, String course, String deadline) {
+    public AssignmentEntity(long id, String title, String course, String deadline, String image) {
         this.id = id;
         this.title = title;
         this.course = course;
         this.deadline = deadline;
+        this.image = image;
     }
 
     // 🔹 Getter & Setter
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -52,5 +54,13 @@ public class AssignmentEntity {
 
     public void setDeadline(String deadline) {
         this.deadline = deadline;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

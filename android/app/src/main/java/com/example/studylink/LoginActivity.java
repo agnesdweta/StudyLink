@@ -58,7 +58,8 @@ public class LoginActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     LoginResponse res = response.body();
                     TokenManager tokenManager = new TokenManager(LoginActivity.this);
-                    tokenManager.save(res.getToken(), res.getUsername());
+                    long userId = res.getUserId(); // pastikan response login punya field userId
+                    tokenManager.save(res.getToken(), res.getUsername(), userId);
 
                     Toast.makeText(LoginActivity.this, "Login Berhasil", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(LoginActivity.this, DashboardActivity.class));

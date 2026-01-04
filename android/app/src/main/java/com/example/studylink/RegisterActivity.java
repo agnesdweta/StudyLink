@@ -67,7 +67,7 @@ public class RegisterActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     RegisterResponse res = response.body();
                     TokenManager tokenManager = new TokenManager(RegisterActivity.this);
-                    tokenManager.save(res.getToken(), res.getUsername());
+                    tokenManager.save(res.getToken(), res.getUsername(), res.getUserId());
 
                     Toast.makeText(RegisterActivity.this, "Register berhasil", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
