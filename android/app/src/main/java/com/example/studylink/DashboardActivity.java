@@ -14,7 +14,7 @@ import com.example.studylink.util.TokenManager;
 
 public class DashboardActivity extends AppCompatActivity {
 
-    private LinearLayout navHome, navNotif, navProfil;
+    private LinearLayout navHome, navCamera, navProfil;
     private ImageView btnLogout;
     private LinearLayout menuExamLayout, menuCalendarLayout,
             menuForumLayout, menuCoursesLayout,
@@ -33,7 +33,7 @@ public class DashboardActivity extends AppCompatActivity {
         String username = tokenManager.getUsername();
         txtUserName.setText("Hallo, " + username);
         navHome = findViewById(R.id.navHome);
-        navNotif = findViewById(R.id.navNotif);
+        navCamera = findViewById(R.id.navCamera);
         navProfil = findViewById(R.id.navProfil);
         btnLogout = findViewById(R.id.btnLogout);
 
@@ -55,8 +55,8 @@ public class DashboardActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ProfileActivity.class))
         );
 
-        navNotif.setOnClickListener(v ->
-                Toast.makeText(this, "Notifikasi diklik", Toast.LENGTH_SHORT).show()
+        navCamera.setOnClickListener(v ->
+                startActivity(new Intent(DashboardActivity.this, CameraActivity.class))
         );
 
         btnLogout.setOnClickListener(v -> {

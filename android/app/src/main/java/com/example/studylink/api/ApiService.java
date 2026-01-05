@@ -1,6 +1,7 @@
 package com.example.studylink.api;
 
 import com.example.studylink.Assignment;
+import com.example.studylink.AssignmentEntity;
 import com.example.studylink.CalendarEntity;
 import com.example.studylink.Course;
 import com.example.studylink.ExamEntity;
@@ -8,6 +9,7 @@ import com.example.studylink.ForumEntity;
 import com.example.studylink.ImageResponse;
 import com.example.studylink.Schedule;
 import com.example.studylink.UserEntity;
+import com.example.studylink.UserResponse;
 import com.example.studylink.model.*;
 
 import java.util.List;
@@ -35,12 +37,15 @@ public interface ApiService {
     @GET("users/{id}")
     Call<UserEntity> getUser(@Path("id") long id);
 
-    @PUT("users/{id}")
-    Call<UserEntity> updateUser(@Path("id") long id, @Body UserEntity user);
-    @Multipart
-    @PUT("users/{id}/photo")
-    Call<UserEntity> uploadUserPhoto(
+    @PUT("users/{id}/profile")
+    Call<UserEntity> updateUser(
             @Path("id") long id,
+            @Body UserEntity user
+    );
+    @Multipart
+    @POST("users/{id}/photo")
+    Call<UserResponse> uploadPhoto(
+            @Path("id") long userId,
             @Part MultipartBody.Part photo
     );
 
@@ -136,10 +141,12 @@ public interface ApiService {
     Call<List<CalendarEntity>> getCalendarEvents();
 
     @Multipart
-    @POST("assignments/{id}/image")
+    @POST("assignments/{id}/upload")
     Call<ImageResponse> uploadAssignmentImage(
             @Path("id") long id,
             @Part MultipartBody.Part image);
+    @DELETE("assignments/{id}/image")
+    Call<AssignmentEntity> deleteAssignmentImage(@Path("id") long id);
     @GET("assignments")
     Call<List<Assignment>> getAssignments();
     @PUT("assignments/{id}")
@@ -151,5 +158,7 @@ public interface ApiService {
 
     @DELETE("assignments/{id}")
     Call<Void> deleteAssignment(@Path("id") long id);
+
+    Call<UserEntity> uploadUserPhoto(long userId, MultipartBody.Part part);
 }
 

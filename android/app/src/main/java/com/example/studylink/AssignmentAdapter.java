@@ -1,9 +1,11 @@
 package com.example.studylink;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ImageView;
 
@@ -21,6 +23,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.Vi
         void onDelete(AssignmentEntity assignment, int position);
 
         void onUpload(AssignmentEntity assignment);
+        void onDeleteImage(AssignmentEntity assignment, int position);
     }
 
     private List<AssignmentEntity> assignments;
@@ -46,9 +49,13 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.Vi
         holder.txtTitle.setText(assignment.getTitle());
         holder.txtCourse.setText(assignment.getCourse());
         holder.txtDeadline.setText("Deadline: " + assignment.getDeadline());
+
         // 🔹 Tampilkan foto jika ada
-        if (assignment.getImage() != null && !assignment.getImage().isEmpty()) {
-            String url = "http://<SERVER_IP>:3000/uploads/" + assignment.getImage();
+        if (assignment.getLocalImagePath() != null && !assignment.getLocalImagePath().isEmpty()) {
+            // tampilkan gambar lokal sementara
+            holder.imgPhoto.setImageURI(Uri.parse(assignment.getLocalImagePath()));
+        } else if (assignment.getImage() != null && !assignment.getImage().isEmpty()) {
+            // tampilkan gambar dari server
             Glide.with(holder.itemView.getContext())
                     .load("http://10.0.2.2:3000/uploads/" + assignment.getImage())
                     .placeholder(android.R.drawable.ic_menu_report_image)
@@ -57,6 +64,12 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.Vi
         } else {
             holder.imgPhoto.setImageResource(android.R.drawable.ic_menu_report_image);
         }
+        // 🔹 Klik tombol delete di gambar untuk hapus
+        holder.btnDeleteImage.setOnClickListener(v -> {
+            if (listener != null && assignment.getImage() != null && !assignment.getImage().isEmpty()) {
+                listener.onDeleteImage(assignment, holder.getAdapterPosition());
+            }
+        });
 
         holder.btnEdit.setOnClickListener(v -> {
             if (listener != null)
@@ -70,6 +83,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.Vi
             if (listener != null)
                 listener.onUpload(assignment); // 🔹 Panggil listener Upload
         });
+        holder.btnDeleteImage.setOnClickListener(v -> listener.onDeleteImage(assignment, position));
     }
 
     @Override
@@ -86,7 +100,8 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.Vi
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView txtTitle, txtCourse, txtDeadline;
         Button btnEdit, btnDelete, btnUpload;
-        ImageView imgPhoto; // 🔹 ImageView untuk foto
+        ImageView imgPhoto;
+        ImageButton btnDeleteImage;// 🔹 ImageView untuk foto
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -96,7 +111,8 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.Vi
             btnEdit = itemView.findViewById(R.id.btnEdit);
             btnDelete = itemView.findViewById(R.id.btnDelete);
             btnUpload = itemView.findViewById(R.id.btnUploadAssignment);
-            imgPhoto = itemView.findViewById(R.id.imgAssignmentPhoto); // pastikan ada di layout
+            btnDeleteImage = itemView.findViewById(R.id.btnDeleteImage);
+            imgPhoto = itemView.findViewById(R.id.imgAssignment); // pastikan ada di layout
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.studylink;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "assignments")
@@ -62,5 +63,17 @@ public class AssignmentEntity {
 
     public void setImage(String image) {
         this.image = image;
+    }
+    // 🔹 ===== TAMBAHAN UNTUK IMAGE LOCAL =====
+    @Ignore
+    private String localImagePath; // menyimpan path/URI sementara sebelum upload
+
+    @Ignore
+    public String getLocalImagePath() {
+        return localImagePath;
+    }
+    @Ignore
+    public void setLocalImagePath(String localImagePath) {
+        this.localImagePath = localImagePath;
     }
 }

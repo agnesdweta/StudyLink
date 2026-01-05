@@ -46,6 +46,8 @@ public class CalendarActivity extends AppCompatActivity
         calendarAdapter = new CalendarAdapter(
                 new ArrayList<>(),
                 new ArrayList<>(),
+                selectedDate.get(Calendar.YEAR),
+                selectedDate.get(Calendar.MONTH) + 1,
                 this
         );
         calendarRecyclerView.setAdapter(calendarAdapter);
@@ -104,7 +106,12 @@ public class CalendarActivity extends AppCompatActivity
                     AppDatabase.getInstance(this).calendarDao().getAll();
 
             runOnUiThread(() -> {
-                calendarAdapter.updateData(daysInMonth, allEvents);
+                calendarAdapter.updateData(
+                        daysInMonth, // ✅ FIX
+                        allEvents,
+                        selectedDate.get(Calendar.YEAR),
+                        selectedDate.get(Calendar.MONTH) + 1
+                );
             });
         }).start();
     }
@@ -310,7 +317,12 @@ public class CalendarActivity extends AppCompatActivity
             ArrayList<String> days = daysInMonthArray();
 
             runOnUiThread(() -> {
-                calendarAdapter.updateData(days, allEvents);
+                calendarAdapter.updateData(
+                        days,
+                        allEvents,
+                        selectedDate.get(Calendar.YEAR),
+                        selectedDate.get(Calendar.MONTH) + 1
+                );
             });
         }).start();
     }

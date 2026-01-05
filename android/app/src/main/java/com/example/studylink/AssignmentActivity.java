@@ -85,6 +85,10 @@ public class AssignmentActivity extends AppCompatActivity {
                 uploadAssignment = assignment;
                 openImageChooser();
             }
+            @Override
+            public void onDeleteImage(AssignmentEntity assignment, int position) {
+                deleteImage(assignment, position); // panggil method hapus gambar
+            }
         });
 
         rvAssignment.setAdapter(adapter);
@@ -258,6 +262,9 @@ public class AssignmentActivity extends AppCompatActivity {
             Uri imageUri = data.getData();
             if (imageUri == null) return;
 
+            uploadAssignment.setLocalImagePath(imageUri.toString());
+            adapter.notifyDataSetChanged();
+
             ApiService api = RetrofitClient.getService();
             MultipartBody.Part imagePart =
                     FileUtils.prepareFilePart(this, "image", imageUri);
@@ -265,20 +272,61 @@ public class AssignmentActivity extends AppCompatActivity {
             api.uploadAssignmentImage(uploadAssignment.getId(), imagePart)
                     .enqueue(new Callback<ImageResponse>() {
                         @Override
-                        public void onResponse(Call<ImageResponse> call,
-                                               Response<ImageResponse> response) {
-                            loadAssignments();
+                        public void onResponse(Call<ImageResponse> call, Response<ImageResponse> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                String uploadedFileName = response.body().getFilename(); // misal ImageResponse ada getFilename()
+                                uploadAssignment.setImage(uploadedFileName);
+
+                                new Thread(() -> {
+                                    db.assignmentDao().update(uploadAssignment); // update Room DB
+                                    runOnUiThread(() -> {
+                                        adapter.notifyDataSetChanged(); // refresh RecyclerView
+                                    });
+                                }).start();
+                            } else {
+                                Toast.makeText(
+                                        AssignmentActivity.this,
+                                        "Upload berhasil tapi server tidak merespon filename",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                            }
                         }
 
                         @Override
                         public void onFailure(Call<ImageResponse> call, Throwable t) {
                             Toast.makeText(
                                     AssignmentActivity.this,
-                                    "Upload gagal",
+                                    "Upload gagal: " + t.getMessage(),
                                     Toast.LENGTH_SHORT
                             ).show();
                         }
                     });
         }
     }
-}
+            // =======================
+            // 🔹 DELETE IMAGE
+            // =======================
+            private void deleteImage(AssignmentEntity assignment, int position) {
+                ApiService api = RetrofitClient.getService();
+                api.deleteAssignmentImage(assignment.getId()) // pastikan endpoint di server ada: DELETE /assignments/:id/image
+                        .enqueue(new Callback<AssignmentEntity>() {
+                            @Override
+                            public void onResponse(Call<AssignmentEntity> call, Response<AssignmentEntity> response) {
+                                if (response.isSuccessful() && response.body() != null) {
+                                    assignments.set(position, response.body()); // update data list
+                                    adapter.notifyItemChanged(position);        // refresh RecyclerView
+                                    new Thread(() -> {
+                                        db.assignmentDao().update(response.body()); // update Room DB
+                                    }).start();
+                                    Toast.makeText(AssignmentActivity.this, "Gambar dihapus", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<AssignmentEntity> call, Throwable t) {
+                                Toast.makeText(AssignmentActivity.this, "Gagal menghapus gambar", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+
+        }

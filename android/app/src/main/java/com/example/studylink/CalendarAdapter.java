@@ -16,12 +16,18 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Calend
     private final ArrayList<String> daysOfMonth;
     private final List<CalendarEntity> events;
     private final OnItemListener onItemListener;
+    private int currentYear;
+    private int currentMonth;
 
     public CalendarAdapter(ArrayList<String> daysOfMonth,
                            List<CalendarEntity> events,
+                           int year,
+                           int month,
                            OnItemListener onItemListener) {
         this.daysOfMonth = daysOfMonth;
         this.events = events != null ? events : new ArrayList<>();
+        this.currentYear = year;
+        this.currentMonth = month;
         this.onItemListener = onItemListener;
     }
 
@@ -49,39 +55,41 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Calend
             int dayInt = Integer.parseInt(day);
             boolean hasEvent = false;
             for (CalendarEntity e : events) {
-                if (e.getDate().endsWith(String.format("-%02d", dayInt))) {
+                String[] parts = e.getDate().split("-");
+                int eventYear = Integer.parseInt(parts[0]);
+                int eventMonth = Integer.parseInt(parts[1]);
+                int eventDay = Integer.parseInt(parts[2]);
+                if (eventYear == currentYear &&
+                        eventMonth == currentMonth &&
+                        eventDay == dayInt) {
                     hasEvent = true;
                     break;
                 }
             }
 
             if (hasEvent) {
-                try {
-                    holder.dayOfMonth.setBackground(holder.itemView.getContext()
-                            .getDrawable(R.drawable.event_bg));
-                } catch (Exception e) {
-                    holder.dayOfMonth.setBackground(null);
-                }
-            } else {
-                holder.dayOfMonth.setBackground(null);
+                holder.dayOfMonth.setBackground(
+                        holder.itemView.getContext().getDrawable(R.drawable.event_bg)
+                );
             }
-        } else {
-            holder.dayOfMonth.setBackground(null);
         }
     }
-
     @Override
     public int getItemCount() {
         return daysOfMonth.size();
     }
 
     public void updateData(ArrayList<String> newDays,
-                           List<CalendarEntity> newEvents) {
+                           List<CalendarEntity> newEvents,
+                           int year,
+                           int month) {
         daysOfMonth.clear();
         daysOfMonth.addAll(newDays);
 
         events.clear();
         events.addAll(newEvents);
+        this.currentYear = year;
+        this.currentMonth = month;
 
         notifyDataSetChanged();
     }

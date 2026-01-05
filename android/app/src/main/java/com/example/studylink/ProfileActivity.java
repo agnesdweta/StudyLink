@@ -1,40 +1,48 @@
 package com.example.studylink;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.studylink.api.ApiService;
 import com.example.studylink.api.RetrofitClient;
 import com.example.studylink.db.AppDatabase;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
 
+import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import java.io.InputStream;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private TextView btnEditProfile, btnChangePassword;
-    private TextView tvFirstName, tvLastName, tvEmail;
-    private ImageView btnBack;
-    private ActivityResultLauncher<Intent> editProfileLauncher;
-    private long userId = 1;
-    private ImageView ivProfilePhoto, btnEditPhoto;
+    private TextView tvFirstName, tvLastName, tvEmail, btnEditProfile;
+    private ImageView ivProfilePhoto, btnEditPhoto, btnBack;
+    private long userId;
 
-    private AppDatabase db; // <--- penting
+    private AppDatabase db;
     private ActivityResultLauncher<Intent> pickImageLauncher;
+    private RecyclerView rvProfiles;
+    private ProfileAdapter adapter;
+    private List<UserEntity> userList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,141 +53,136 @@ public class ProfileActivity extends AppCompatActivity {
         tvLastName = findViewById(R.id.tvLastName);
         tvEmail = findViewById(R.id.tvEmail);
         btnEditProfile = findViewById(R.id.btnEditProfile);
-        btnBack = findViewById(R.id.btnBack);
-        ivProfilePhoto = findViewById(R.id.ivProfilePhoto);
         btnEditPhoto = findViewById(R.id.btnEditPhoto);
+        ivProfilePhoto = findViewById(R.id.ivProfilePhoto);
+        btnBack = findViewById(R.id.btnBack);
+        rvProfiles = findViewById(R.id.rvProfiles);
 
         db = AppDatabase.getInstance(this);
-        editProfileLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if(result.getResultCode() == Activity.RESULT_OK && result.getData() != null){
-                        Intent data = result.getData();
-                        String firstName = data.getStringExtra("first_name");
-                        String lastName = data.getStringExtra("last_name");
-                        String email = data.getStringExtra("email");
 
-                        tvFirstName.setText(firstName);
-                        tvLastName.setText(lastName);
-                        tvEmail.setText(email);
+        adapter = new ProfileAdapter(this, userList, db, (user, position) -> {});
+        rvProfiles.setLayoutManager(new LinearLayoutManager(this));
+        rvProfiles.setAdapter(adapter);
 
-                        UserEntity user = new UserEntity(userId, firstName, lastName, email);
+        userId = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
+                .getLong("user_id", -1);
 
-                        // update Room
-                        new Thread(() -> db.userDao().update(user)).start();
+        if (userId == -1) finish();
 
-                        // update backend
-                        ApiService api = RetrofitClient.getService();
-                        api.updateUser(userId, user).enqueue(new Callback<UserEntity>() {
-                            @Override
-                            public void onResponse(Call<UserEntity> call, Response<UserEntity> response) { }
-                            @Override
-                            public void onFailure(Call<UserEntity> call, Throwable t) { t.printStackTrace(); }
-                        });
-                    }
-                });
-        // ===== launcher untuk pilih foto =====
+        btnBack.setOnClickListener(v -> onBackPressed());
+        btnEditProfile.setOnClickListener(v -> openEditProfile());
+        btnEditPhoto.setOnClickListener(v -> pickPhoto());
+
         pickImageLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    if(result.getResultCode() == Activity.RESULT_OK && result.getData() != null){
-                        Uri imageUri = result.getData().getData();
-                        if(imageUri != null){
-                            ivProfilePhoto.setImageURI(imageUri); // tampil di ImageView
-                            savePhoto(imageUri);                    // simpan ke Room & backend
-                        }
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Uri uri = result.getData().getData();
+                        if (uri != null) uploadPhoto(uri);
                     }
-                });
-        btnBack.setOnClickListener(v -> onBackPressed());
-        btnEditProfile.setOnClickListener(v -> {
-            Intent intent = new Intent(ProfileActivity.this, EditProfileActivity.class);
-            intent.putExtra("user_id", userId);
-            editProfileLauncher.launch(intent);
-        });
-        btnEditPhoto.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            intent.setType("image/*"); // hanya gambar
-            pickImageLauncher.launch(intent);
-        });
+                }
+        );
 
-        // load user
         loadUser();
     }
-    private void savePhoto(Uri imageUri) {
-        String path = imageUri.toString();
 
-        // ===== Update Room =====
-        new Thread(() -> {
-            UserEntity userRoom = db.userDao().getUserById(userId);
-            if (userRoom != null) {
-                userRoom.setPhotoPath(path);
-                db.userDao().update(userRoom);
-            }
-        }).start();
+    private void openEditProfile() {
+        Intent i = new Intent(this, EditProfileActivity.class);
+        i.putExtra("user_id", userId);
+        startActivity(i);
+    }
 
-        // ===== Update backend user info =====
-        UserEntity user = new UserEntity(
-                userId,
-                tvFirstName.getText().toString(),
-                tvLastName.getText().toString(),
-                tvEmail.getText().toString()
-        );
-        user.setPhotoPath(path);
+    private void pickPhoto() {
+        Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        i.setType("image/*");
+        pickImageLauncher.launch(i);
+    }
+
+    private void loadUser() {
         ApiService api = RetrofitClient.getService();
-        api.updateUser(userId, user).enqueue(new Callback<UserEntity>() {
+        api.getUser(userId).enqueue(new Callback<UserEntity>() {
             @Override
-            public void onResponse(Call<UserEntity> call, Response<UserEntity> response) { }
+            public void onResponse(Call<UserEntity> call, Response<UserEntity> res) {
+                if (res.isSuccessful() && res.body() != null) {
+                    UserEntity user = res.body();
+
+                    tvFirstName.setText(user.getFirstName());
+                    tvLastName.setText(user.getLastName());
+                    tvEmail.setText(user.getEmail());
+
+                    Glide.with(ProfileActivity.this).clear(ivProfilePhoto);
+                    if (user.getPhotoPath() != null && !user.getPhotoPath().isEmpty()) {
+                        Glide.with(ProfileActivity.this)
+                                .load("http://10.0.2.2:3000/uploads/" + user.getPhotoPath())
+                                .skipMemoryCache(true)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .placeholder(R.drawable.default_avatar)
+                                .into(ivProfilePhoto);
+                    } else {
+                        ivProfilePhoto.setImageResource(R.drawable.default_avatar);
+                    }
+
+                    // Simpan ke Room
+                    Executors.newSingleThreadExecutor().execute(() -> db.userDao().insert(user));
+
+                    // update RecyclerView
+                    userList.clear();
+                    userList.add(user);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
             @Override
-            public void onFailure(Call<UserEntity> call, Throwable t) { t.printStackTrace(); }
+            public void onFailure(Call<UserEntity> call, Throwable t) {}
         });
+    }
 
-        // ===== Upload foto ke backend =====
+    private void uploadPhoto(Uri uri) {
         try {
-            InputStream inputStream = getContentResolver().openInputStream(imageUri);
-            byte[] bytes = new byte[inputStream.available()];
-            inputStream.read(bytes);
+            InputStream is = getContentResolver().openInputStream(uri);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            byte[] buf = new byte[1024];
+            int r;
+            while ((r = is.read(buf)) != -1) bos.write(buf, 0, r);
+            is.close();
 
-            RequestBody requestFile = RequestBody.create(bytes, okhttp3.MediaType.parse("image/*"));
-            MultipartBody.Part body = MultipartBody.Part.createFormData("photo", "photo.jpg", requestFile);
+            RequestBody req = RequestBody.create(bos.toByteArray(), MediaType.parse("image/*"));
+            MultipartBody.Part part = MultipartBody.Part.createFormData("photo", "photo.jpg", req);
 
-            api.uploadUserPhoto(userId, body).enqueue(new Callback<UserEntity>() {
+            RetrofitClient.getService().uploadUserPhoto(userId, part).enqueue(new Callback<UserEntity>() {
                 @Override
-                public void onResponse(Call<UserEntity> call, Response<UserEntity> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        // update Room lagi dengan data backend (opsional)
-                        UserEntity updated = response.body();
-                        new Thread(() -> db.userDao().update(updated)).start();
+                public void onResponse(Call<UserEntity> call, Response<UserEntity> res) {
+                    if (res.isSuccessful() && res.body() != null) {
+                        UserEntity u = res.body();
+
+                        // update Room (photoPath saja)
+                        Executors.newSingleThreadExecutor().execute(() ->
+                                db.userDao().updatePhoto(u.getId(), u.getPhotoPath())
+                        );
+
+                        // update adapter + Glide
+                        runOnUiThread(() -> {
+                            adapter.updateUser(u);
+                            Glide.with(ProfileActivity.this)
+                                    .load("http://10.0.2.2:3000/uploads/" + u.getPhotoPath())
+                                    .skipMemoryCache(true)
+                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                    .placeholder(R.drawable.default_avatar)
+                                    .into(ivProfilePhoto);
+                            Toast.makeText(ProfileActivity.this, "Foto berhasil diupdate", Toast.LENGTH_SHORT).show();
+                        });
                     }
                 }
 
                 @Override
                 public void onFailure(Call<UserEntity> call, Throwable t) {
-                    t.printStackTrace();
+                    Toast.makeText(ProfileActivity.this, "Upload gagal: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-    private void loadUser() {
-        ApiService api = RetrofitClient.getService();
-        api.getUser(userId).enqueue(new Callback<UserEntity>() {
-            @Override
-            public void onResponse(Call<UserEntity> call, Response<UserEntity> response) {
-                if(response.isSuccessful() && response.body() != null){
-                    UserEntity user = response.body();
-                    tvFirstName.setText(user.getFirstName());
-                    tvLastName.setText(user.getLastName());
-                    tvEmail.setText(user.getEmail());
-
-                    new Thread(() -> db.userDao().insert(user)).start();
-                }
-            }
-            @Override
-            public void onFailure(Call<UserEntity> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
     }
 }

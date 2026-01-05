@@ -358,8 +358,9 @@
                 android:textSize="12sp" />
         </LinearLayout>
 
+        <!-- MENU KAMERA -->
         <LinearLayout
-            android:id="@+id/navNotif"
+            android:id="@+id/navCamera"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -369,13 +370,13 @@
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="28dp"
-                app:srcCompat="@drawable/outline_notifications_24" />
+                app:srcCompat="@drawable/outline_camera_24" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="@string/notifikasi"
+                android:text="Kamera"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -401,6 +402,5 @@
         </LinearLayout>
 
     </LinearLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
