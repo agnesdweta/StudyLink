@@ -7,14 +7,15 @@
     android:layout_height="match_parent"
     tools:context=".DashboardActivity">
 
+    <!-- HEADER -->
     <ImageView
         android:id="@+id/ImageView"
         android:layout_width="0dp"
         android:layout_height="180dp"
         android:background="@drawable/bg_gradasi"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <ImageView
         android:id="@+id/btnLogout"
@@ -25,7 +26,7 @@
         android:contentDescription="@string/logout_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/outline_logout_24" />
+        app:srcCompat="@drawable/outline_logout_24"/>
 
     <TextView
         android:id="@+id/txtUsername"
@@ -38,7 +39,7 @@
         android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/txtHello"
@@ -51,7 +52,7 @@
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <EditText
         android:id="@+id/edtSearch"
@@ -67,275 +68,273 @@
         android:paddingEnd="20dp"
         android:textStyle="bold|italic"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtUsername" />
+        app:layout_constraintTop_toBottomOf="@id/txtUsername"/>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/bannerLayout"
+    <!-- SCROLLABLE CONTENT -->
+    <ScrollView
+        android:id="@+id/scrollContent"
         android:layout_width="0dp"
-        android:layout_height="130dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="30dp"
-        android:background="@drawable/banner_bg"
-        android:padding="18dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edtSearch">
-
-        <ImageView
-            android:id="@+id/bannerImg"
-            android:layout_width="115dp"
-            android:layout_height="115dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/img_4" />
-
-        <TextView
-            android:id="@+id/bannerText1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/to_get_unlimited"
-            android:textColor="#ffffff"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/bannerText2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/promo_update_schedule"
-            android:textColor="#ffffff"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/bannerText1" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <LinearLayout
-        android:id="@+id/menuRow1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="30dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bannerLayout">
-
-        <LinearLayout
-            android:id="@+id/menuAssignmentLayout"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_marginEnd="10dp"
-            android:layout_weight="1"
-            android:background="@drawable/white_bg"
-            android:elevation="5dp"
-            android:orientation="vertical"
-            android:padding="10dp"
-            android:clickable="true"
-            android:focusable="true">
-
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_gravity="center"
-                android:contentDescription="@string/menu_assignments"
-                app:srcCompat="@drawable/img_3" />
-
-            <TextView
-                android:id="@+id/menuAssignment"
-                android:layout_width="wrap_content"
-                android:layout_height="18dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="6dp"
-                android:text="@string/menu_assignments"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/menuScheduleLayout"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_marginEnd="10dp"
-            android:layout_weight="1"
-            android:background="@drawable/white_bg"
-            android:elevation="5dp"
-            android:orientation="vertical"
-            android:padding="10dp"
-            android:clickable="true"
-            android:focusable="true">
-
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_gravity="center"
-                android:contentDescription="@string/menu_schedule"
-                app:srcCompat="@drawable/img_6" />
-
-            <TextView
-                android:id="@+id/menuSchedule"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="6dp"
-                android:text="@string/menu_schedule"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/menuExamLayout"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_weight="1"
-            android:background="@drawable/white_bg"
-            android:elevation="5dp"
-            android:orientation="vertical"
-            android:padding="10dp">
-
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_gravity="center"
-                android:contentDescription="@string/menu_exam"
-                app:srcCompat="@drawable/img_9" />
-
-            <TextView
-                android:id="@+id/menuExam"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="6dp"
-                android:text="@string/menu_exam"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/menuRow2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginTop="15dp"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/menuRow1"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/edtSearch"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
-            android:id="@+id/menuCourses"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_weight="1"
-            android:background="@drawable/white_bg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:elevation="5dp"
-            android:padding="10dp"
-            android:layout_marginEnd="10dp">
+            android:padding="16dp">
 
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_gravity="center"
-                android:contentDescription="@string/menu_course"
-                app:srcCompat="@drawable/img_7"/>
+            <!-- Banner -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/bannerLayout"
+                android:layout_width="match_parent"
+                android:layout_height="130dp"
+                android:background="@drawable/banner_bg"
+                android:padding="18dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+                <ImageView
+                    android:id="@+id/bannerImg"
+                    android:layout_width="115dp"
+                    android:layout_height="115dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/img_4"/>
+
+                <TextView
+                    android:id="@+id/bannerText1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/to_get_unlimited"
+                    android:textColor="#ffffff"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <TextView
+                    android:id="@+id/bannerText2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/promo_update_schedule"
+                    android:textColor="#ffffff"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/bannerText1"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Menu Row 1 -->
+            <LinearLayout
+                android:id="@+id/menuRow1"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/menu_course"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:layout_gravity="center"
-                android:layout_marginTop="6dp"/>
-        </LinearLayout>
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp">
 
-        <LinearLayout
-            android:id="@+id/menuForumLayout"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_weight="1"
-            android:background="@drawable/white_bg"
-            android:orientation="vertical"
-            android:elevation="5dp"
-            android:padding="10dp"
-            android:layout_marginEnd="10dp">
+                <!-- Assignment -->
+                <LinearLayout
+                    android:id="@+id/menuAssignmentLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/white_bg"
+                    android:elevation="5dp"
+                    android:orientation="vertical"
+                    android:padding="10dp"
+                    android:clickable="true"
+                    android:focusable="true">
 
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_gravity="center"
-                android:contentDescription="@string/menu_forum"
-                app:srcCompat="@drawable/img_5"/>
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@string/menu_assignments"
+                        app:srcCompat="@drawable/img_3"/>
+                    <TextView
+                        android:id="@+id/menuAssignment"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/menu_assignments"
+                        android:textSize="12sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
 
-            <TextView
-                android:id="@+id/menuForum"
-                android:layout_width="wrap_content"
+                <!-- Schedule -->
+                <LinearLayout
+                    android:id="@+id/menuScheduleLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/white_bg"
+                    android:elevation="5dp"
+                    android:orientation="vertical"
+                    android:padding="10dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@string/menu_schedule"
+                        app:srcCompat="@drawable/img_6"/>
+                    <TextView
+                        android:id="@+id/menuSchedule"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/menu_schedule"
+                        android:textSize="12sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
+                <!-- Exam -->
+                <LinearLayout
+                    android:id="@+id/menuExamLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/white_bg"
+                    android:elevation="5dp"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@string/menu_exam"
+                        app:srcCompat="@drawable/img_9"/>
+                    <TextView
+                        android:id="@+id/menuExam"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/menu_exam"
+                        android:textSize="12sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Menu Row 2 -->
+            <LinearLayout
+                android:id="@+id/menuRow2"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/menu_forum"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:layout_gravity="center"
-                android:layout_marginTop="6dp"/>
+                android:orientation="horizontal"
+                android:layout_marginTop="15dp">
+
+                <!-- Courses -->
+                <LinearLayout
+                    android:id="@+id/menuCourses"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/white_bg"
+                    android:elevation="5dp"
+                    android:orientation="vertical"
+                    android:padding="10dp"
+                    android:layout_marginEnd="10dp">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@string/menu_course"
+                        app:srcCompat="@drawable/img_7"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/menu_course"
+                        android:textSize="12sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
+                <!-- Forum -->
+                <LinearLayout
+                    android:id="@+id/menuForumLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/white_bg"
+                    android:elevation="5dp"
+                    android:orientation="vertical"
+                    android:padding="10dp"
+                    android:layout_marginEnd="10dp">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@string/menu_forum"
+                        app:srcCompat="@drawable/img_5"/>
+                    <TextView
+                        android:id="@+id/menuForum"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/menu_forum"
+                        android:textSize="12sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
+                <!-- Calendar -->
+                <LinearLayout
+                    android:id="@+id/menuCalendarLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/white_bg"
+                    android:elevation="5dp"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@string/menu_calendar"
+                        app:srcCompat="@drawable/img_8"/>
+                    <TextView
+                        android:id="@+id/menuCalendar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/menu_calendar"
+                        android:textSize="12sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
         </LinearLayout>
+    </ScrollView>
 
-        <LinearLayout
-            android:id="@+id/menuCalendarLayout"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_weight="1"
-            android:background="@drawable/white_bg"
-            android:orientation="vertical"
-            android:elevation="5dp"
-            android:padding="10dp">
-
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_gravity="center"
-                android:contentDescription="@string/menu_calendar"
-                app:srcCompat="@drawable/img_8"/>
-
-            <TextView
-                android:id="@+id/menuCalendar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/menu_calendar"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:layout_gravity="center"
-                android:layout_marginTop="6dp"/>
-        </LinearLayout>
-    </LinearLayout>
-
+    <!-- BOTTOM NAVIGATION -->
     <LinearLayout
         android:id="@+id/bottomNav"
         android:layout_width="0dp"
         android:layout_height="65dp"
-        android:layout_marginBottom="16dp"
         android:background="#FFFFFF"
         android:elevation="10dp"
         android:orientation="horizontal"
-        android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/menuRow2"
         app:layout_constraintStart_toStartOf="parent"
-        android:clickable="false"
-        android:focusable="false">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
             android:id="@+id/navHome"
@@ -348,17 +347,15 @@
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="28dp"
-                app:srcCompat="@drawable/outline_home_24" />
-
+                app:srcCompat="@drawable/outline_home_24"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="@string/beranda"
-                android:textSize="12sp" />
+                android:textSize="12sp"/>
         </LinearLayout>
 
-        <!-- MENU KAMERA -->
         <LinearLayout
             android:id="@+id/navCamera"
             android:layout_width="0dp"
@@ -366,18 +363,16 @@
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
-
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="28dp"
-                app:srcCompat="@drawable/outline_camera_24" />
-
+                app:srcCompat="@drawable/outline_camera_24"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Kamera"
-                android:textSize="12sp" />
+                android:textSize="12sp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -386,19 +381,21 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless">
 
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="28dp"
-                app:srcCompat="@drawable/outline_person_24" />
-
+                app:srcCompat="@drawable/outline_person_24"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="@string/profil"
-                android:textSize="12sp" />
+                android:textSize="12sp"/>
         </LinearLayout>
 
     </LinearLayout>

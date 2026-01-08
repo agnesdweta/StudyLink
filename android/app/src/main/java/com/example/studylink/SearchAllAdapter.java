@@ -10,12 +10,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
+public class SearchAllAdapter extends RecyclerView.Adapter<SearchAllAdapter.ViewHolder> {
 
-    private List<SearchItem> list;
+    public interface OnItemClickListener {
+        void onItemClick(SearchResult item);
+    }
 
-    public SearchAdapter(List<SearchItem> list) {
+    private List<SearchResult> list;
+    private OnItemClickListener listener;
+
+    public SearchAllAdapter(List<SearchResult> list, OnItemClickListener listener) {
         this.list = list;
+        this.listener = listener;
     }
 
     @NonNull
@@ -28,9 +34,16 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        SearchItem item = list.get(position);
-        holder.txtTitle.setText(item.getTitle());
-        holder.txtDesc.setText(item.getDescription());
+        SearchResult item = list.get(position);
+        holder.txtTitle.setText(item.itemTitle);
+        holder.txtDesc.setText(item.itemDesc);
+        holder.txtType.setText(item.type);
+
+        holder.itemView.setOnClickListener(v -> {
+            if(listener != null){
+                listener.onItemClick(item);
+            }
+        });
     }
 
     @Override
@@ -39,12 +52,13 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView txtTitle, txtDesc;
+        TextView txtTitle, txtDesc, txtType;
 
-        ViewHolder(View itemView) {
-            super(itemView);
-            txtTitle = itemView.findViewById(R.id.txtTitle);
-            txtDesc = itemView.findViewById(R.id.txtDesc);
+        ViewHolder(View v) {
+            super(v);
+            txtTitle = v.findViewById(R.id.txtTitle);
+            txtDesc = v.findViewById(R.id.txtDesc);
+            txtType = v.findViewById(R.id.txtType);
         }
     }
 }

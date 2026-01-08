@@ -2,6 +2,8 @@ package com.example.studylink;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -16,6 +18,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     private LinearLayout navHome, navCamera, navProfil;
     private ImageView btnLogout;
+    private EditText edtSearch;
     private LinearLayout menuExamLayout, menuCalendarLayout,
             menuForumLayout, menuCoursesLayout,
             menuAssignmentLayout, menuScheduleLayout;
@@ -36,6 +39,25 @@ public class DashboardActivity extends AppCompatActivity {
         navCamera = findViewById(R.id.navCamera);
         navProfil = findViewById(R.id.navProfil);
         btnLogout = findViewById(R.id.btnLogout);
+        edtSearch = findViewById(R.id.edtSearch);
+
+        Handler handler = new Handler();
+        final Runnable[] searchRunnable = new Runnable[1];
+
+        edtSearch.setOnEditorActionListener((v, actionId, event) -> {
+            String keyword = edtSearch.getText().toString().trim();
+
+            if (keyword.isEmpty()) {
+                Toast.makeText(this, "Masukkan kata pencarian", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+
+            Intent intent = new Intent(DashboardActivity.this, SearchResultActivity.class);
+            intent.putExtra("keyword", keyword);
+            startActivity(intent);
+
+            return true;
+        });
 
         menuExamLayout = findViewById(R.id.menuExamLayout);
         menuForumLayout = findViewById(R.id.menuForumLayout);
@@ -45,7 +67,9 @@ public class DashboardActivity extends AppCompatActivity {
         menuScheduleLayout = findViewById(R.id.menuScheduleLayout);
 
         LinearLayout menuRow1 = findViewById(R.id.menuRow1);
-        menuRow1.bringToFront();
+
+        navProfil.setClickable(true);
+        navProfil.setFocusable(true);
 
         navHome.setOnClickListener(v ->
                 Toast.makeText(this, "Home diklik", Toast.LENGTH_SHORT).show()

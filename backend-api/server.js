@@ -100,7 +100,11 @@ app.post('/register', async (req, res) => {
   const newUser = {
     id: Date.now(),
     username,
-    password: hashedPassword
+    password: hashedPassword,
+    firstName: "",
+    lastName: "",
+    email: "",
+    photoPath: ""
   };
 
   db.users.push(newUser);
@@ -133,7 +137,8 @@ app.post('/login', async (req, res) => {
   res.json({
     message: 'Login berhasil',
     token,
-    username: user.username
+    username: user.username,
+    id: user.id
   });
 });
 
@@ -145,7 +150,14 @@ app.get('/users/:id', (req, res) => {
   const id = Number(req.params.id);
   const user = db.users.find(u => u.id === id);
   if (!user) return res.status(404).json({ message: 'User tidak ditemukan' });
-  res.json(user);
+  res.json({
+    id: user.id,
+    username: user.username,
+    firstName: user.firstName || "",
+    lastName: user.lastName || "",
+    email: user.email || "",
+    photoPath: user.photoPath || ""
+  });
 });
 
 app.put('/users/:id/profile', (req, res) => {
@@ -163,7 +175,17 @@ app.put('/users/:id/profile', (req, res) => {
 
   saveDB(db);
 
-  res.json({ message: 'Profile berhasil diupdate', user });
+  res.json({
+  message: 'Profile berhasil diupdate',
+  user: {
+    id: user.id,
+    username: user.username,
+    firstName: user.firstName || "",
+    lastName: user.lastName || "",
+    email: user.email || "",
+    photoPath: user.photoPath || ""
+  }
+});
 });
 
 // UPLOAD PHOTO USER (POST)
@@ -190,7 +212,15 @@ app.post('/users/:id/photo', upload.single('photo'), (req, res) => {
         saveDB(db);
 
         // Return user terbaru
-    res.json(user);
+    res.json({
+  id: user.id,
+  username: user.username,
+  firstName: user.firstName || "",
+  lastName: user.lastName || "",
+  email: user.email || "",
+  photoPath: user.photoPath || ""
+});
+
   } catch (err) {
     console.error('Error upload photo:', err);
     res.status(500).json({ message: 'Terjadi kesalahan server' });

@@ -18,6 +18,8 @@ import com.example.studylink.ScheduleDao;
 import com.example.studylink.ScheduleEntity;
 import com.example.studylink.CourseDao;
 import com.example.studylink.CourseEntity;
+import com.example.studylink.SearchAllDao;
+import com.example.studylink.SearchEntity;
 import com.example.studylink.UserDao;
 import com.example.studylink.UserEntity;
 
@@ -29,9 +31,10 @@ import com.example.studylink.UserEntity;
                 ExamEntity.class,
                 ForumEntity.class,
                 CalendarEntity.class,
-                UserEntity.class
+                UserEntity.class,
+                SearchEntity.class
         },
-        version = 18,           // ⬅️ NAIKKAN VERSION (WAJIB)
+        version = 19,           // ⬅️ NAIKKAN VERSION (WAJIB)
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
@@ -51,6 +54,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract CalendarDao calendarDao();
 
     public abstract UserDao userDao();
+    public abstract SearchAllDao searchAllDao();
 
     public static AppDatabase getInstance(Context context) {
         if (instance == null) {

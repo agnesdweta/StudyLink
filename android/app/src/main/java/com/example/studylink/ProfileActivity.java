@@ -18,6 +18,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.studylink.api.ApiService;
 import com.example.studylink.api.RetrofitClient;
 import com.example.studylink.db.AppDatabase;
+import com.example.studylink.util.TokenManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -34,7 +35,7 @@ import retrofit2.Response;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private TextView tvFirstName, tvLastName, tvEmail, btnEditProfile;
+    private TextView tvProfileName, tvFirstName, tvLastName, tvEmail, btnEditProfile, tvPhotoFileName;
     private ImageView ivProfilePhoto, btnEditPhoto, btnBack;
     private long userId;
 
@@ -49,6 +50,8 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        // ======= findViewById =======
+        tvProfileName = findViewById(R.id.tvProfileName);
         tvFirstName = findViewById(R.id.tvFirstName);
         tvLastName = findViewById(R.id.tvLastName);
         tvEmail = findViewById(R.id.tvEmail);
@@ -56,6 +59,7 @@ public class ProfileActivity extends AppCompatActivity {
         btnEditPhoto = findViewById(R.id.btnEditPhoto);
         ivProfilePhoto = findViewById(R.id.ivProfilePhoto);
         btnBack = findViewById(R.id.btnBack);
+        tvPhotoFileName = findViewById(R.id.tvPhotoFileName);
         rvProfiles = findViewById(R.id.rvProfiles);
 
         db = AppDatabase.getInstance(this);
@@ -64,10 +68,14 @@ public class ProfileActivity extends AppCompatActivity {
         rvProfiles.setLayoutManager(new LinearLayoutManager(this));
         rvProfiles.setAdapter(adapter);
 
-        userId = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
-                .getLong("user_id", -1);
+        TokenManager tokenManager = new TokenManager(this);
+        this.userId = tokenManager.getUserId();
 
-        if (userId == -1) finish();
+        if (this.userId <= 0) {
+            Toast.makeText(this, "User belum login", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         btnBack.setOnClickListener(v -> onBackPressed());
         btnEditProfile.setOnClickListener(v -> openEditProfile());
@@ -99,6 +107,74 @@ public class ProfileActivity extends AppCompatActivity {
         pickImageLauncher.launch(i);
     }
 
+    private void uploadPhoto(Uri uri) {
+        try {
+            // Convert Uri → byte[]
+            InputStream is = getContentResolver().openInputStream(uri);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            byte[] buf = new byte[1024];
+            int read;
+            while ((read = is.read(buf)) != -1) {
+                bos.write(buf, 0, read);
+            }
+            byte[] bytes = bos.toByteArray();
+            is.close();
+
+            // MultipartBody.Part
+            RequestBody requestFile = RequestBody.create(bytes, MediaType.parse("image/*"));
+            MultipartBody.Part body = MultipartBody.Part.createFormData("photo", "profile.jpg", requestFile);
+
+            // Upload ke server
+            RetrofitClient.getService()
+                    .uploadUserPhoto(userId, body)
+                    .enqueue(new Callback<UserEntity>() {
+                        @Override
+                        public void onResponse(Call<UserEntity> call, Response<UserEntity> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                Toast.makeText(ProfileActivity.this, "Foto berhasil diupload", Toast.LENGTH_SHORT).show();
+                                UserEntity updatedUser = response.body();
+
+                                // Update CircularImageView
+                                if (updatedUser.getPhotoPath() != null && !updatedUser.getPhotoPath().isEmpty()) {
+                                    Glide.with(ProfileActivity.this)
+                                            .load("http://10.0.2.2:3000/uploads/" + updatedUser.getPhotoPath())
+                                            .skipMemoryCache(true)
+                                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                            .placeholder(R.drawable.default_avatar)
+                                            .into(ivProfilePhoto);
+
+                                    // Update tvPhotoFileName tanpa .jpg
+                                    String fileName = updatedUser.getPhotoPath();
+                                    if (fileName.contains(".")) {
+                                        fileName = fileName.substring(0, fileName.lastIndexOf('.'));
+                                    }
+                                    tvPhotoFileName.setText(fileName);
+                                }
+
+                                // Simpan ke Room
+                                Executors.newSingleThreadExecutor().execute(() -> db.userDao().insert(updatedUser));
+
+                                // Update RecyclerView
+                                userList.clear();
+                                userList.add(updatedUser);
+                                adapter.notifyDataSetChanged();
+                            } else {
+                                Toast.makeText(ProfileActivity.this, "Upload gagal", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<UserEntity> call, Throwable t) {
+                            Toast.makeText(ProfileActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error membaca file", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void loadUser() {
         ApiService api = RetrofitClient.getService();
         api.getUser(userId).enqueue(new Callback<UserEntity>() {
@@ -107,6 +183,9 @@ public class ProfileActivity extends AppCompatActivity {
                 if (res.isSuccessful() && res.body() != null) {
                     UserEntity user = res.body();
 
+                    tvProfileName.setText(
+                            user.getUsername() != null ? user.getUsername() : user.getFirstName() + " " + user.getLastName()
+                    );
                     tvFirstName.setText(user.getFirstName());
                     tvLastName.setText(user.getLastName());
                     tvEmail.setText(user.getEmail());
@@ -119,14 +198,18 @@ public class ProfileActivity extends AppCompatActivity {
                                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                                 .placeholder(R.drawable.default_avatar)
                                 .into(ivProfilePhoto);
+
+                        String fileName = user.getPhotoPath();
+                        if (fileName.contains(".")) fileName = fileName.substring(0, fileName.lastIndexOf('.'));
+                        tvPhotoFileName.setText(""); // kosongkan
+
                     } else {
                         ivProfilePhoto.setImageResource(R.drawable.default_avatar);
+                        tvPhotoFileName.setText("Belum ada foto");
                     }
 
-                    // Simpan ke Room
                     Executors.newSingleThreadExecutor().execute(() -> db.userDao().insert(user));
 
-                    // update RecyclerView
                     userList.clear();
                     userList.add(user);
                     adapter.notifyDataSetChanged();
@@ -134,55 +217,8 @@ public class ProfileActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<UserEntity> call, Throwable t) {}
+            public void onFailure(Call<UserEntity> call, Throwable t) {
+            }
         });
-    }
-
-    private void uploadPhoto(Uri uri) {
-        try {
-            InputStream is = getContentResolver().openInputStream(uri);
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            byte[] buf = new byte[1024];
-            int r;
-            while ((r = is.read(buf)) != -1) bos.write(buf, 0, r);
-            is.close();
-
-            RequestBody req = RequestBody.create(bos.toByteArray(), MediaType.parse("image/*"));
-            MultipartBody.Part part = MultipartBody.Part.createFormData("photo", "photo.jpg", req);
-
-            RetrofitClient.getService().uploadUserPhoto(userId, part).enqueue(new Callback<UserEntity>() {
-                @Override
-                public void onResponse(Call<UserEntity> call, Response<UserEntity> res) {
-                    if (res.isSuccessful() && res.body() != null) {
-                        UserEntity u = res.body();
-
-                        // update Room (photoPath saja)
-                        Executors.newSingleThreadExecutor().execute(() ->
-                                db.userDao().updatePhoto(u.getId(), u.getPhotoPath())
-                        );
-
-                        // update adapter + Glide
-                        runOnUiThread(() -> {
-                            adapter.updateUser(u);
-                            Glide.with(ProfileActivity.this)
-                                    .load("http://10.0.2.2:3000/uploads/" + u.getPhotoPath())
-                                    .skipMemoryCache(true)
-                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                    .placeholder(R.drawable.default_avatar)
-                                    .into(ivProfilePhoto);
-                            Toast.makeText(ProfileActivity.this, "Foto berhasil diupdate", Toast.LENGTH_SHORT).show();
-                        });
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<UserEntity> call, Throwable t) {
-                    Toast.makeText(ProfileActivity.this, "Upload gagal: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

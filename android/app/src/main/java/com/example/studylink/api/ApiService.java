@@ -34,20 +34,19 @@ public interface ApiService {
     @POST("login")
     Call<LoginResponse> login(@Body LoginRequest request);
     // ================= USER PROFILE =================
-    @GET("users/{id}")
-    Call<UserEntity> getUser(@Path("id") long id);
-
-    @PUT("users/{id}/profile")
-    Call<UserEntity> updateUser(
-            @Path("id") long id,
-            @Body UserEntity user
-    );
     @Multipart
     @POST("users/{id}/photo")
-    Call<UserResponse> uploadPhoto(
+    Call<UserEntity> uploadUserPhoto(
             @Path("id") long userId,
             @Part MultipartBody.Part photo
     );
+    @PUT("users/{id}/profile")
+    Call<UserEntity> updateProfile(
+            @Path("id") long userId,
+            @Body EditProfileRequest body
+    );
+
+
 
     // ================= SCHEDULE (ROOM SYNC) =================
     @GET("schedules")
@@ -159,6 +158,7 @@ public interface ApiService {
     @DELETE("assignments/{id}")
     Call<Void> deleteAssignment(@Path("id") long id);
 
-    Call<UserEntity> uploadUserPhoto(long userId, MultipartBody.Part part);
+    @GET("users/{id}")
+    Call<UserEntity> getUser(@Path("id") long userId);
 }
 

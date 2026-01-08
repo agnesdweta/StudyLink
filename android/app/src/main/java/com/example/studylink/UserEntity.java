@@ -1,6 +1,7 @@
 package com.example.studylink;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "users")
@@ -8,6 +9,8 @@ public class UserEntity {
 
     @PrimaryKey(autoGenerate = false)
     public long id;
+    @Ignore
+    private String username;
 
     public String firstName;
     public String lastName;
@@ -34,4 +37,9 @@ public class UserEntity {
     public void setLastName(String lastName) { this.lastName = lastName; }
     public void setEmail(String email) { this.email = email; }
     public void setPhotoPath(String photoPath) { this.photoPath = photoPath; }
+    public void setUsername(String username) { this.username = username; }
+
+    public String getUsername() {
+        return username;
+    }
 }
